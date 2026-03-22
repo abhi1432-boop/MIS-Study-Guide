@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chapter 6 — Moore's Law & Tech Trends</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0d0f1a; --surface: #13162a; --border: #1e2340;
+      --accent: #e8b84b; --accent2: #5b8dee; --text: #e8eaf0;
+      --muted: #7a7f9a; --green: #4cbb8a; --red: #e05c6a;
+    }
+    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background-image: linear-gradient(rgba(91,141,238,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(91,141,238,0.03) 1px, transparent 1px);
+      background-size: 60px 60px; pointer-events: none; z-index: 0;
+    }
+    .wrapper { position: relative; z-index: 1; max-width: 820px; margin: 0 auto; padding: 48px 24px 80px; }
+
+    .back { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); text-decoration: none; font-size: 0.85rem; margin-bottom: 40px; transition: color 0.2s; }
+    .back:hover { color: var(--accent); }
+    .back::before { content: '←'; }
+
+    .ch-label { font-size: 11px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); }
+    h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; margin: 10px 0 6px; line-height: 1.15; }
+    .ch-subtitle { color: var(--muted); font-size: 0.95rem; font-weight: 300; }
+    .divider { width: 50px; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); margin: 24px 0; }
+
+    .section { margin-top: 52px; }
+    .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+    .section-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+    .icon-vocab { background: rgba(232,184,75,0.12); }
+    .icon-concepts { background: rgba(91,141,238,0.12); }
+    .icon-quiz { background: rgba(76,187,138,0.12); }
+    .section-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; }
+
+    .vocab-list { display: flex; flex-direction: column; gap: 12px; }
+    .vocab-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; }
+    .vocab-term { font-weight: 500; font-size: 1rem; color: var(--accent); margin-bottom: 6px; }
+    .vocab-def { font-size: 0.9rem; color: var(--text); line-height: 1.65; }
+    .vocab-cite { font-size: 0.78rem; color: var(--muted); margin-top: 8px; font-style: italic; }
+    .analogy-box { margin-top: 10px; background: rgba(232,184,75,0.06); border-left: 2px solid rgba(232,184,75,0.4); padding: 8px 12px; border-radius: 0 6px 6px 0; font-size: 0.83rem; color: var(--accent); line-height: 1.5; }
+
+    .concept-list { display: flex; flex-direction: column; gap: 12px; }
+    .concept-card { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent2); border-radius: 0 12px 12px 0; padding: 18px 20px; }
+    .concept-title { font-weight: 500; color: var(--accent2); font-size: 0.95rem; margin-bottom: 8px; }
+    .concept-body { font-size: 0.9rem; line-height: 1.7; color: var(--text); }
+    .concept-body b { color: var(--accent); font-weight: 500; }
+
+    .bytes-table { width: 100%; border-collapse: collapse; font-size: 0.83rem; margin-top: 12px; }
+    .bytes-table th { text-align: left; padding: 8px 12px; color: var(--accent); border-bottom: 1px solid var(--border); font-weight: 500; }
+    .bytes-table td { padding: 8px 12px; border-bottom: 1px solid rgba(30,35,64,0.6); }
+    .bytes-table tr:last-child td { border-bottom: none; }
+
+    .quiz-container { display: flex; flex-direction: column; gap: 28px; }
+    .quiz-q { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px 24px 20px; }
+    .q-number { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); margin-bottom: 10px; }
+    .q-text { font-size: 1rem; font-weight: 500; line-height: 1.55; margin-bottom: 18px; }
+    .options { display: flex; flex-direction: column; gap: 8px; }
+    .option { display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 0.88rem; line-height: 1.5; transition: border-color 0.2s, background 0.2s; user-select: none; }
+    .option:hover { border-color: var(--accent2); background: rgba(91,141,238,0.06); }
+    .option.correct { border-color: var(--green) !important; background: rgba(76,187,138,0.1) !important; }
+    .option.wrong { border-color: var(--red) !important; background: rgba(224,92,106,0.08) !important; }
+    .opt-letter { min-width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; flex-shrink: 0; margin-top: 1px; }
+    .option.correct .opt-letter { background: var(--green); border-color: var(--green); color: #fff; }
+    .option.wrong .opt-letter { background: var(--red); border-color: var(--red); color: #fff; }
+    .feedback { margin-top: 12px; font-size: 0.83rem; color: var(--green); display: none; line-height: 1.55; padding: 10px 12px; background: rgba(76,187,138,0.06); border-radius: 8px; }
+    .feedback.wrong-fb { color: #f09a6a; background: rgba(224,92,106,0.06); }
+
+    .score-bar { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    .score-text { font-size: 0.95rem; color: var(--muted); }
+    .score-num { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; color: var(--accent); }
+    .reset-btn { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 8px 18px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-family: 'DM Sans', sans-serif; transition: border-color 0.2s, color 0.2s; }
+    .reset-btn:hover { border-color: var(--accent); color: var(--accent); }
+    footer { text-align: center; margin-top: 64px; color: var(--muted); font-size: 0.8rem; }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+  <a href="index.html" class="back">Back to all chapters</a>
+
+  <div class="ch-label">Chapter 06</div>
+  <h1>Moore's Law & Tech Trends</h1>
+  <p class="ch-subtitle">Why computing keeps getting faster and cheaper — and why every manager must care</p>
+  <div class="divider"></div>
+
+  <!-- VOCAB -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-vocab">📖</div>
+      <div class="section-title">Vocabulary</div>
+    </div>
+    <div class="vocab-list">
+
+      <div class="vocab-card">
+        <div class="vocab-term">Moore's Law</div>
+        <div class="vocab-def">The observation — not a scientific law — that chip performance per dollar doubles approximately every 18 months. Coined after Intel co-founder Gordon Moore's 1965 article predicting the trend. For managers, the implication is: whatever computing can do today, it will do twice as powerfully for the same cost in roughly a year and a half.</div>
+        <div class="analogy-box">🧠 Analogy: Imagine if your car doubled in speed every 18 months while staying the same price. That's essentially what has happened with computing for decades.</div>
+        <div class="vocab-cite">Source: Gallaugher, Information Systems: A Manager's Guide to Harnessing Technology, Ch. 6</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Microprocessor</div>
+        <div class="vocab-def">The chip inside a computing device that executes the instructions of a computer program. It is the "brain" of the device — it interprets and runs software such as browsers, games, and operating systems. Moore's Law directly applies to microprocessors: next-generation chips should be roughly twice as fast as today's for the same price in ~18 months.</div>
+        <div class="analogy-box">🧠 Analogy: If a computer is a kitchen, the microprocessor is the chef — it reads the recipe (software) and executes every instruction step by step.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 6</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Volatile Memory (RAM)</div>
+        <div class="vocab-def">Random-access memory (RAM) is fast, chip-based storage that is completely wiped when power is cut. Programs are loaded into RAM from storage so the processor can access them quickly. RAM is temporary — it only holds data while the device is on and the program is running.</div>
+        <div class="analogy-box">🧠 Analogy: RAM is like a whiteboard. Fast and easy to write on — but erased entirely when you leave the room (lose power).</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 6</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Non-Volatile Memory (Flash / SSD)</div>
+        <div class="vocab-def">Storage that retains data even when powered off. Flash memory (used in phones, USB drives, and SSDs) is non-volatile and solid-state — meaning no moving parts. This makes it faster, more reliable, and more energy-efficient than traditional hard disk drives (HDDs), which use spinning magnetic platters. A solid-state drive (SSD) is a chip-based, non-volatile storage device.</div>
+        <div class="analogy-box">🧠 Analogy: Non-volatile memory is like a notebook. You can close it, turn off the lights, and your notes are still there when you return.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 6</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Semiconductor</div>
+        <div class="vocab-def">A substance (typically silicon dioxide) capable of both enabling and inhibiting the flow of electricity, making it ideal for building transistors and computer chips. When someone refers to "the semiconductor industry," they are talking about the computer chip business. Terms like "semiconductor" and "chip" are often used interchangeably in business contexts.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 6; Britannica.com/technology/semiconductor</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Latency</div>
+        <div class="vocab-def">In computing, latency refers to delay — the time it takes for data to travel from one point to another and back. Low latency = fast response. High latency = noticeable lag. Cloud computing introduces latency because data must travel from your device to a remote server and back — which is why voice assistants like Alexa sometimes feel slightly slow.</div>
+        <div class="analogy-box">🧠 Analogy: Latency is like the delay on an international phone call. Information is traveling — it's just not instant.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 6</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Price Elasticity of Demand</div>
+        <div class="vocab-def">The rate at which demand for a product changes as its price changes. Technology is highly price elastic — as prices fall, demand spikes dramatically. Crucially, falling chip prices don't just sell more to existing customers; they open entirely new markets by bringing tech to people and applications that previously couldn't afford it.</div>
+        <div class="analogy-box">🧠 Analogy: When smartphones dropped below $50, billions of people in developing countries could suddenly afford one — that's extreme price elasticity creating a brand new market, not just a discount for existing users.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 6; Investopedia.com/terms/p/priceelasticity</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Internet of Things (IoT)</div>
+        <div class="vocab-def">A network of everyday physical objects embedded with low-cost sensors, processors, and wireless communication that allows them to collect data, analyze input, and coordinate actions automatically — without requiring direct human interaction. Examples include smart thermostats, RFID luggage tags, connected medical devices, and Disney's MagicBand.</div>
+        <div class="analogy-box">🧠 Analogy: Imagine your refrigerator noticing you're out of milk and adding it to your grocery order automatically. IoT = objects that talk to each other and act on data.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 6; IBM Institute for Business Value</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">E-Waste (Electronic Waste)</div>
+        <div class="vocab-def">Discarded, obsolete technology — the fastest-growing waste stream on the planet. Over 57 million tons are generated globally per year. E-waste is especially hazardous because consumer electronics contain toxic materials including lead, mercury, and cadmium. Despite making up only ~2% of total waste, e-waste accounts for over 70% of discarded toxic heavy metals.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 6; United Nations Global E-waste Monitor 2020</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Emulator</div>
+        <div class="vocab-def">A software-based interpreter that allows programs designed for one hardware standard to run on a device using a different standard. Emulation adds a real-time translation step, so emulated programs run slower than natively compiled ones. Apple used its "Rosetta" emulator to allow Intel-based Mac software to run on new M1 chips during the transition period.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 6</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Compiler</div>
+        <div class="vocab-def">A program that translates source code written by a developer into the specific instruction set that a target processor understands. Once code is compiled natively for a new chip, no emulator is needed — the program runs at full speed on the new hardware. Compilers are what allow developers to take advantage of new chip architectures.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 6</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Multicore Processor</div>
+        <div class="vocab-def">A microprocessor containing two or more independent calculating "cores" on the same chip. Rather than one very fast, very hot single core, multicore chips use several lower-power cores working in parallel. Nearly all modern smartphones, laptops, and PCs use multicore processors. Important caveat: to benefit from multiple cores, software must be specifically written to divide its tasks across them.</div>
+        <div class="analogy-box">🧠 Analogy: One 300-lb lineman vs. two 160-lb players. Two lighter players can do the same job with less strain — but only if the play is designed for two people.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 6</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- KEY CONCEPTS -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-concepts">💡</div>
+      <div class="section-title">Key Concepts</div>
+    </div>
+    <div class="concept-list">
+
+      <div class="concept-card">
+        <div class="concept-title">Moore's Law Is Slowing — But Fast/Cheap Computing Isn't</div>
+        <div class="concept-body">Gordon Moore's specific prediction was about transistor density (how tightly we can pack circuits on a chip). That is slowing — Apple's A17 Pro chip has pathways only 10 atoms wide, and physics sets a hard floor. But managers shouldn't confuse "slowing transistor density" with "slowing computing progress." <b>Better chip architecture, multicore designs, 3D transistors, and cloud offloading</b> are all continuing to improve price/performance. Apple's M1 chip didn't beat Intel by squeezing more transistors — it beat them by redesigning the chip from scratch, abandoning Intel's 40-year-old x86 architecture entirely. The managerial lesson: stay alert to fast/cheap advances broadly, not just one metric.</div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-title">Advancement Rates Across Technologies</div>
+        <div class="concept-body">Moore's Law covers chips, but related technologies advance even faster:<br><br>
+        • <b>Microprocessors (silicon chips):</b> performance per dollar doubles ~every 18 months<br>
+        • <b>Magnetic storage (hard drives / Kryder's Law):</b> storage density doubles ~every 12 months<br>
+        • <b>Fiber-optic transmission:</b> speed doubles ~every 9 months (with equipment changes only)<br>
+        • <b>AI model performance:</b> doubling ~every 6 months (per University of Aberdeen research)<br><br>
+        These are rough approximations — rates fluctuate — but the overall trajectory is unmistakably steep. A manager who ignores these curves risks being blindsided by disruption.</div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-title">Storage vs. Bandwidth — The Data Kitchen</div>
+        <div class="concept-body">Think of a computer as a kitchen. <b>Long-term storage</b> (HDD/SSD) is the pantry — holds all your ingredients (data) when not in use. <b>RAM</b> is the counter space — fast, limited, holds only what you're actively preparing. The <b>microprocessor</b> is the chef executing every recipe step. <b>Bandwidth</b> is how quickly deliveries (data) arrive from outside.<br><br>
+        Critical unit distinction: <b>storage is measured in bytes; bandwidth is measured in bits per second</b>. Since 1 byte = 8 bits, a 100 Mbps internet connection only transfers ~12.5 MB per second — not 100 MB. Confusing bits and bytes is one of the most common mistakes in technology discussions.
+        <table class="bytes-table">
+          <tr><th>Unit</th><th>~Size</th><th>Reference Point</th></tr>
+          <tr><td>1 Byte</td><td>8 bits</td><td>One typed character ("A")</td></tr>
+          <tr><td>1 Kilobyte (KB)</td><td>~1,000 B</td><td>One typewritten page ≈ 2 KB</td></tr>
+          <tr><td>1 Megabyte (MB)</td><td>~1 million B</td><td>One MP3 song ≈ 3 MB</td></tr>
+          <tr><td>1 Gigabyte (GB)</td><td>~1 billion B</td><td>One DVD movie ≈ 4.7 GB</td></tr>
+          <tr><td>1 Terabyte (TB)</td><td>~1 trillion B</td><td>Printed Library of Congress ≈ 20 TB</td></tr>
+          <tr><td>1 Petabyte (PB)</td><td>~1 quadrillion B</td><td>Netflix library (2013) ≈ 3.14 PB</td></tr>
+        </table>
+        </div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-title">Parallel Computing — Divide and Conquer</div>
+        <div class="concept-body">When a single chip gets too hot to speed up, one solution is to divide work across multiple processors simultaneously. This is the core idea behind <b>multicore chips, grid computing, cluster computing, and supercomputing</b> — all attempt to split a big problem into smaller pieces handled by many processors at once.<br><br>
+        The catch: <b>only certain problems can be parallelized</b>. Tasks that are "embarrassingly parallel" (like rendering animation frames, financial simulations, or training AI models) divide beautifully. But <b>linear problems</b> — where step 2 can't start until step 1 finishes — see little benefit from parallelism, no matter how many cores you throw at them.</div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-title">The Seven Waves of Computing</div>
+        <div class="concept-body">Moore's Law has powered a succession of disruptive waves, each opening new markets and displacing old leaders:<br><br>
+        <b>1.</b> Mainframes (1960s) — only governments and corporations<br>
+        <b>2.</b> Minicomputers (1970s) — workgroups and factories<br>
+        <b>3.</b> Personal Computers (1980s) — desktops for everyone<br>
+        <b>4.</b> Internet computing (1990s) — networked world<br>
+        <b>5.</b> Mobile phones (2000s) — computing in every pocket<br>
+        <b>6.</b> Pervasive/IoT computing — chips in everything<br>
+        <b>7.</b> AI in the cloud (now) — intelligent services everywhere<br><br>
+        Key pattern: <b>no firm that dominated one wave successfully led the next.</b> Minicomputer makers didn't lead PCs. Film camera makers didn't lead digital photography. Amazon — an online bookstore — became the cloud computing leader. The threat and opportunity always arrive from outside your current industry.</div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-title">E-Waste: The Dark Side of Moore's Law</div>
+        <div class="concept-body">Fast/cheap tech means fast obsolescence. Laptops last ~2–4 years; smartphones ~18 months. The result: <b>57+ million tons of e-waste per year</b> — the equivalent of discarding every commercial aircraft ever built, every single year. E-waste is just ~2% of total waste but over 70% of discarded toxic heavy metals (lead, mercury, cadmium).<br><br>
+        The manager's lesson goes beyond compliance: <b>outsourcing disposal does not end your liability</b>. The Basel Action Network has GPS-tracked e-waste from legitimate U.S. recyclers to toxic dump sites abroad — with corporate labels still attached. Managers must audit the full product lifecycle and their disposal partners with the same rigor as any other supplier.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-quiz">🎯</div>
+      <div class="section-title">Practice Quiz</div>
+    </div>
+
+    <div class="score-bar" style="margin-bottom:24px;">
+      <div>
+        <div class="score-text">Your score</div>
+        <div class="score-num" id="score">0 / 5</div>
+      </div>
+      <button class="reset-btn" onclick="resetQuiz()">Reset Quiz</button>
+    </div>
+
+    <div class="quiz-container">
+
+      <!-- Q1 -->
+      <div class="quiz-q" id="q1">
+        <div class="q-number">Question 1</div>
+        <div class="q-text">A manager reads that Moore's Law is "slowing down" because transistor pathways are now only ~10 atoms wide. She concludes that fast/cheap computing advances are basically over. What's wrong with this reasoning?</div>
+        <div class="options">
+          <div class="option" onclick="answer(this,'q1',false)"><div class="opt-letter">A</div> Nothing is wrong — once transistor density stops improving, all computing advancement stops too.</div>
+          <div class="option" onclick="answer(this,'q1',true)"><div class="opt-letter">B</div> She's conflating one specific measure (transistor density) with the broader trend. Computing performance continues to improve through better chip architecture, multicore design, 3D transistors, and cloud offloading.</div>
+          <div class="option" onclick="answer(this,'q1',false)"><div class="opt-letter">C</div> She's right that chip progress is ending, but wrong to apply it to storage — magnetic storage advances are unaffected.</div>
+          <div class="option" onclick="answer(this,'q1',false)"><div class="opt-letter">D</div> She is correct, but only for consumer devices — enterprise computing is exempt from Moore's Law constraints.</div>
+        </div>
+        <div class="feedback" id="q1-fb">✓ Correct! Moore's Law in its original transistor-density sense is slowing — but fast/cheap computing broadly is not. Apple's M1 chip achieved massive performance gains through architectural redesign, not by cramming more transistors. Managers must track the broader performance curve, not just one narrow metric.</div>
+        <div class="feedback wrong-fb" id="q1-wfb">✗ Not quite. The key insight is that "transistor density" is just one input into computing performance. Better chip design (like Apple M1), multicore processors, 3D transistors, and cloud computing all keep the fast/cheap trend alive even as density limits approach. The manager is making the mistake of conflating one measure with the whole picture.</div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="quiz-q" id="q2">
+        <div class="q-number">Question 2</div>
+        <div class="q-text">You need to transfer a 4 GB video file over a 400 Mbps internet connection. Approximately how long will this take?</div>
+        <div class="options">
+          <div class="option" onclick="answer(this,'q2',false)"><div class="opt-letter">A</div> About 10 seconds, since 400 Mbps means 400 megabytes per second.</div>
+          <div class="option" onclick="answer(this,'q2',false)"><div class="opt-letter">B</div> About 1 second, since 400 Mbps is much larger than 4 GB.</div>
+          <div class="option" onclick="answer(this,'q2',true)"><div class="opt-letter">C</div> About 80 seconds, because 4 GB = 32 gigabits, and 32,000 Mb ÷ 400 Mbps = 80 seconds.</div>
+          <div class="option" onclick="answer(this,'q2',false)"><div class="opt-letter">D</div> About 4 minutes, since file transfers are always bottlenecked by the number of gigabytes in the file.</div>
+        </div>
+        <div class="feedback" id="q2-fb">✓ Correct! The key is unit conversion: storage uses bytes, bandwidth uses bits, and 1 byte = 8 bits. So 4 GB = 32 Gb = 32,000 Mb. Dividing by 400 Mbps gives 80 seconds. This is one of the most practical calculations in this chapter.</div>
+        <div class="feedback wrong-fb" id="q2-wfb">✗ Not quite. This is the classic bits vs. bytes trap. Bandwidth (Mbps) is in bits; file size (GB) is in bytes. Since 1 byte = 8 bits, 4 GB = 32 Gb = 32,000 Mb. At 400 Mbps: 32,000 ÷ 400 = 80 seconds. Always convert to the same unit before calculating.</div>
+      </div>
+
+      <!-- Q3 -->
+      <div class="quiz-q" id="q3">
+        <div class="q-number">Question 3</div>
+        <div class="q-text">Which scenario best illustrates why RAM is classified as "volatile" memory while an SSD is classified as "non-volatile" memory?</div>
+        <div class="options">
+          <div class="option" onclick="answer(this,'q3',false)"><div class="opt-letter">A</div> RAM is volatile because it can be physically damaged by heat, while SSDs are non-volatile because they are sealed.</div>
+          <div class="option" onclick="answer(this,'q3',false)"><div class="opt-letter">B</div> RAM is volatile because it stores less data than an SSD.</div>
+          <div class="option" onclick="answer(this,'q3',true)"><div class="opt-letter">C</div> A student's laptop loses power mid-essay. The unsaved text in the open document (held in RAM) is gone permanently, while the saved files on the SSD are completely intact.</div>
+          <div class="option" onclick="answer(this,'q3',false)"><div class="opt-letter">D</div> RAM is volatile because it requires an internet connection to function, while SSDs work offline.</div>
+        </div>
+        <div class="feedback" id="q3-fb">✓ Correct! "Volatile" means data is wiped when power is cut. RAM holds the active program and unsaved work — lose power and it's gone. Non-volatile storage like SSDs and flash memory retain data regardless of power state. This is why saving your work matters.</div>
+        <div class="feedback wrong-fb" id="q3-wfb">✗ Not quite. The volatile/non-volatile distinction is purely about whether data survives a power loss. RAM is volatile — it wipes completely on power loss. An SSD (or any flash memory) is non-volatile — data persists without power. This has nothing to do with size, internet, or physical durability.</div>
+      </div>
+
+      <!-- Q4 -->
+      <div class="quiz-q" id="q4">
+        <div class="q-number">Question 4</div>
+        <div class="q-text">A pharmaceutical company wants to use parallel computing to run two projects simultaneously: (A) simulating 10,000 different drug molecules independently, and (B) running a 12-step clinical data processing pipeline where each step requires the previous step's output. Which project will benefit most from parallel computing, and why?</div>
+        <div class="options">
+          <div class="option" onclick="answer(this,'q4',false)"><div class="opt-letter">A</div> Project B, because more steps means more opportunities to divide the work across cores.</div>
+          <div class="option" onclick="answer(this,'q4',true)"><div class="opt-letter">B</div> Project A, because simulating each molecule is an independent task that can be run simultaneously across many processors with no dependency on other results.</div>
+          <div class="option" onclick="answer(this,'q4',false)"><div class="opt-letter">C</div> Both equally — all computing tasks benefit the same amount from parallel processing.</div>
+          <div class="option" onclick="answer(this,'q4',false)"><div class="opt-letter">D</div> Neither — pharmaceutical computing is too specialized for general parallel computing frameworks.</div>
+        </div>
+        <div class="feedback" id="q4-fb">✓ Correct! Parallel computing shines when tasks are independent and can be divided. Simulating 10,000 molecules is "embarrassingly parallel" — each molecule simulation doesn't depend on another. The pipeline (Project B) is linear: step 2 can't start until step 1 finishes, so parallelism doesn't help much.</div>
+        <div class="feedback wrong-fb" id="q4-wfb">✗ Not quite. The golden rule of parallel computing: it only helps tasks that can be split into independent pieces. Project A (independent molecule simulations) is ideal for parallelism. Project B has sequential dependencies — each step requires the previous result, so you can't run multiple steps simultaneously no matter how many processors you add.</div>
+      </div>
+
+      <!-- Q5 -->
+      <div class="quiz-q" id="q5">
+        <div class="q-number">Question 5</div>
+        <div class="q-text">A company proudly announces a "zero landfill" e-waste policy and contracts with an overseas recycler. The Basel Action Network later GPS-tracks the firm's old servers to a toxic informal dump abroad. What is the most important managerial lesson here?</div>
+        <div class="options">
+          <div class="option" onclick="answer(this,'q5',false)"><div class="opt-letter">A</div> The company is legally safe since they hired a third-party recycler — liability rests entirely with the recycler.</div>
+          <div class="option" onclick="answer(this,'q5',false)"><div class="opt-letter">B</div> The lesson is primarily about choosing cheaper domestic recyclers instead of overseas ones.</div>
+          <div class="option" onclick="answer(this,'q5',false)"><div class="opt-letter">C</div> E-waste is only a problem for large consumer electronics firms, not general businesses that consume technology.</div>
+          <div class="option" onclick="answer(this,'q5',true)"><div class="opt-letter">D</div> Managers must audit the full downstream lifecycle of their technology and disposal partners — outsourcing e-waste does not transfer reputational, ethical, or legal risk.</div>
+        </div>
+        <div class="feedback" id="q5-fb">✓ Correct! This is the chapter's core managerial e-waste lesson. The U.S. GAO found 43 American recyclers willing to export e-waste illegally — some held Earth Day events. Having your company's label found at a toxic dump is a PR crisis regardless of who you paid. Managers must apply the same audit rigor to disposal partners as to any supplier.</div>
+        <div class="feedback wrong-fb" id="q5-wfb">✗ Not quite. Handing equipment to a recycler doesn't end your company's responsibility. The full lifecycle of your technology is a managerial concern — reputational damage, ethical accountability, and increasingly legal liability don't disappear just because you hired a middleman. The BAN GPS-tracking exposes show how frequently "recycling" becomes "exporting toxins."</div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer><p>Chapter 6 · Moore's Law & Tech Trends · Study Guide</p></footer>
+</div>
+
+<script>
+  let answered = {q1:false,q2:false,q3:false,q4:false,q5:false};
+  let correctCount = 0;
+
+  function answer(el, qid, isCorrect) {
+    if (answered[qid]) return;
+    answered[qid] = true;
+    const opts = el.closest('.options').querySelectorAll('.option');
+    opts.forEach(o => o.style.pointerEvents = 'none');
+    if (isCorrect) {
+      el.classList.add('correct');
+      correctCount++;
+      document.getElementById(qid+'-fb').style.display = 'block';
+    } else {
+      el.classList.add('wrong');
+      document.getElementById(qid+'-wfb').style.display = 'block';
+      opts.forEach(o => {
+        if (o.getAttribute('onclick') && o.getAttribute('onclick').includes('true')) o.classList.add('correct');
+      });
+    }
+    document.getElementById('score').textContent = correctCount + ' / 5';
+  }
+
+  function resetQuiz() {
+    answered = {q1:false,q2:false,q3:false,q4:false,q5:false};
+    correctCount = 0;
+    document.getElementById('score').textContent = '0 / 5';
+    document.querySelectorAll('.option').forEach(o => {
+      o.classList.remove('correct','wrong');
+      o.style.pointerEvents = '';
+    });
+    document.querySelectorAll('.feedback').forEach(f => f.style.display = 'none');
+  }
+</script>
+</body>
+</html>
