@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chapter 8 — Open Source Software</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0d0f1a; --surface: #13162a; --border: #1e2340;
+      --accent: #e8b84b; --accent2: #5b8dee; --text: #e8eaf0;
+      --muted: #7a7f9a; --green: #4cbb8a; --red: #e05c6a;
+    }
+    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background-image: linear-gradient(rgba(91,141,238,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(91,141,238,0.03) 1px, transparent 1px);
+      background-size: 60px 60px; pointer-events: none; z-index: 0;
+    }
+    .wrapper { position: relative; z-index: 1; max-width: 820px; margin: 0 auto; padding: 48px 24px 80px; }
+
+    .back { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); text-decoration: none; font-size: 0.85rem; margin-bottom: 40px; transition: color 0.2s; }
+    .back:hover { color: var(--accent); }
+    .back::before { content: '←'; }
+
+    .ch-label { font-size: 11px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); }
+    h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; margin: 10px 0 6px; line-height: 1.15; }
+    .ch-subtitle { color: var(--muted); font-size: 0.95rem; font-weight: 300; }
+    .divider { width: 50px; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); margin: 24px 0; }
+
+    .section { margin-top: 52px; }
+    .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+    .section-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+    .icon-vocab { background: rgba(232,184,75,0.12); }
+    .icon-concepts { background: rgba(91,141,238,0.12); }
+    .icon-quiz { background: rgba(76,187,138,0.12); }
+    .section-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; }
+
+    .vocab-list { display: flex; flex-direction: column; gap: 12px; }
+    .vocab-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; }
+    .vocab-term { font-weight: 500; font-size: 1rem; color: var(--accent); margin-bottom: 6px; }
+    .vocab-def { font-size: 0.9rem; color: var(--text); line-height: 1.65; }
+    .vocab-cite { font-size: 0.78rem; color: var(--muted); margin-top: 8px; font-style: italic; }
+    .analogy-box { margin-top: 10px; background: rgba(232,184,75,0.06); border-left: 2px solid rgba(232,184,75,0.4); padding: 8px 12px; border-radius: 0 6px 6px 0; font-size: 0.83rem; color: var(--accent); line-height: 1.5; }
+
+    .concept-list { display: flex; flex-direction: column; gap: 12px; }
+    .concept-card { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent2); border-radius: 0 12px 12px 0; padding: 18px 20px; }
+    .concept-title { font-weight: 500; color: var(--accent2); font-size: 0.95rem; margin-bottom: 8px; }
+    .concept-body { font-size: 0.9rem; line-height: 1.7; color: var(--text); }
+    .concept-body b { color: var(--accent); font-weight: 500; }
+
+    /* Benefits grid */
+    .benefit-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; margin-top: 12px; }
+    .benefit-tile { background: rgba(91,141,238,0.07); border: 1px solid rgba(91,141,238,0.18); border-radius: 8px; padding: 12px 14px; }
+    .benefit-title { font-size: 0.82rem; font-weight: 500; color: var(--accent2); margin-bottom: 4px; }
+    .benefit-body  { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+
+    /* Risk tiles */
+    .risk-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; margin-top: 12px; }
+    .risk-tile { background: rgba(224,92,106,0.06); border: 1px solid rgba(224,92,106,0.18); border-radius: 8px; padding: 12px 14px; }
+    .risk-title { font-size: 0.82rem; font-weight: 500; color: var(--red); margin-bottom: 4px; }
+    .risk-body  { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+
+    /* Business model pills */
+    .biz-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+    .biz-item { display: flex; gap: 12px; align-items: flex-start; font-size: 0.88rem; line-height: 1.6; }
+    .biz-badge { background: rgba(232,184,75,0.12); color: var(--accent); font-size: 0.75rem; font-weight: 500; padding: 3px 10px; border-radius: 20px; white-space: nowrap; margin-top: 2px; }
+
+    .quiz-container { display: flex; flex-direction: column; gap: 28px; }
+    .quiz-q { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px 24px 20px; }
+    .q-number { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); margin-bottom: 10px; }
+    .q-text { font-size: 1rem; font-weight: 500; line-height: 1.55; margin-bottom: 18px; }
+    .options { display: flex; flex-direction: column; gap: 8px; }
+    .option { display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 0.88rem; line-height: 1.5; transition: border-color 0.2s, background 0.2s; user-select: none; }
+    .option:hover { border-color: var(--accent2); background: rgba(91,141,238,0.06); }
+    .option.correct { border-color: var(--green) !important; background: rgba(76,187,138,0.1) !important; }
+    .option.wrong   { border-color: var(--red)   !important; background: rgba(224,92,106,0.08) !important; }
+    .opt-letter { min-width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; flex-shrink: 0; margin-top: 1px; }
+    .option.correct .opt-letter { background: var(--green); border-color: var(--green); color: #fff; }
+    .option.wrong   .opt-letter { background: var(--red);   border-color: var(--red);   color: #fff; }
+    .feedback { margin-top: 12px; font-size: 0.83rem; color: var(--green); display: none; line-height: 1.55; padding: 10px 12px; background: rgba(76,187,138,0.06); border-radius: 8px; }
+    .feedback.wrong-fb { color: #f09a6a; background: rgba(224,92,106,0.06); }
+
+    .score-bar { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    .score-text { font-size: 0.95rem; color: var(--muted); }
+    .score-num  { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; color: var(--accent); }
+    .reset-btn  { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 8px 18px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-family: 'DM Sans', sans-serif; transition: border-color 0.2s, color 0.2s; }
+    .reset-btn:hover { border-color: var(--accent); color: var(--accent); }
+    footer { text-align: center; margin-top: 64px; color: var(--muted); font-size: 0.8rem; }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+  <a href="index.html" class="back">Back to all chapters</a>
+
+  <div class="ch-label">Chapter 08</div>
+  <h1>Open Source Software</h1>
+  <p class="ch-subtitle">Free code, massive industry — why OSS reshapes every business decision in tech</p>
+  <div class="divider"></div>
+
+  <!-- VOCAB -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-vocab">📖</div>
+      <div class="section-title">Vocabulary</div>
+    </div>
+    <div class="vocab-list">
+
+      <div class="vocab-card">
+        <div class="vocab-term">Open Source Software (OSS)</div>
+        <div class="vocab-def">Software that is free to use, and whose source code is openly published — meaning anyone can read it, modify it, and redistribute it, provided the modified version remains open and free. This is fundamentally different from proprietary commercial software, where the code is a closely guarded secret and customers pay per license. OSS is not just "free as in price" — it is "free as in freedom" (sometimes called FLOSS: Free/Libre/Open Source Software).</div>
+        <div class="analogy-box">🧠 Analogy: A restaurant that not only gives away free food but also hands you the recipe — and asks that if you improve the recipe, you share your version with everyone too.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 8; opensource.org/definition</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Linux</div>
+        <div class="vocab-def">The most important and widely adopted open source operating system, created in 1991 by then-21-year-old Finnish student Linus Torvalds, who gave it away for free. Today Linux powers ~92% of Amazon AWS cloud servers, over 40% of Microsoft Azure, the majority of the world's supercomputers, Android smartphones, TiVo, Mars rovers, and most of the web servers behind Google, Amazon, and Meta. It is maintained by thousands of paid contributors from companies including Google, IBM, Meta, and Microsoft.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 8; Linux Foundation</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Marginal Cost</div>
+        <div class="vocab-def">The cost associated with producing one additional unit of a product. For physical goods (cars, shoes), each additional unit requires raw materials and labor. For software, the marginal cost of producing one more copy is effectively zero — duplicate the file and you're done. This is why category-leading software businesses are extraordinarily profitable: Microsoft generates over $5 billion per month from Windows and Office alone, with near-zero cost per additional customer.</div>
+        <div class="analogy-box">🧠 Analogy: Writing a song costs time and money. But once it's written, streaming it to 1 person vs. 100 million costs virtually the same. Software has the same economics.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 8; Investopedia.com/marginal-cost</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Software as a Service (SaaS)</div>
+        <div class="vocab-def">A form of cloud computing where users access software over the internet — typically through a web browser — rather than installing it locally. The vendor hosts and maintains the software on their own servers; users pay a subscription fee. Examples: Google Docs, Salesforce, Slack, Zoom. SaaS eliminates the need to buy, install, update, or manage software on individual machines.</div>
+        <div class="analogy-box">🧠 Analogy: Instead of buying a car (installing software), you use Uber (SaaS) — pay only when you need it, no maintenance required, always the latest version.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 8</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Cloud Computing</div>
+        <div class="vocab-def">Replacing computing resources — hardware or software — with services delivered over the internet. Rather than owning and maintaining physical servers, firms rent computing power, storage, and software from providers like Amazon (AWS), Microsoft (Azure), and Google (GCP). Cloud computing allows startups to access the same infrastructure as giant corporations, paying only for what they use.</div>
+        <div class="analogy-box">🧠 Analogy: Cloud computing is like electricity from the grid. You don't build your own power plant — you plug in and pay for what you use. AWS is the power plant.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 8</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Virtualization</div>
+        <div class="vocab-def">Software that allows a single physical computer (or cluster of computers) to function as multiple separate, independent machines — each running its own OS and software simultaneously. Virtualization is the core technology enabling most cloud computing. By running many "virtual machines" on one physical server, providers like AWS can use hardware far more efficiently and charge customers only for their slice of computing power.</div>
+        <div class="analogy-box">🧠 Analogy: Virtualization is like converting one large house into multiple apartments. The building (hardware) is the same — but now it serves many independent tenants (virtual machines) simultaneously.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 8</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Total Cost of Ownership (TCO)</div>
+        <div class="vocab-def">An economic measure of the full cost of owning and using a product over its lifetime — not just the purchase price. For software, TCO includes the upfront license cost plus ongoing costs: training, IT support, maintenance, upgrades, and downtime. A product with a $0 price tag (like free OSS) can have a high TCO if it requires expensive expertise to configure, maintain, or troubleshoot. This is why "free" software isn't always cheaper in practice.</div>
+        <div class="analogy-box">🧠 Analogy: A "free" puppy has a $0 sticker price. But food, vet bills, training, and boarding over 10 years make the true cost thousands of dollars. TCO captures the whole picture, not just the purchase price.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 8; Gartner.com/TCO</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">LAMP Stack</div>
+        <div class="vocab-def">An acronym for a widely used set of open source technologies used to build web applications: <b>L</b>inux (OS), <b>A</b>pache (web server), <b>M</b>ySQL (database), and <b>P</b>ython/Perl/PHP (programming language). All four components are free and open source. Facebook, YouTube, and countless other major websites were built on LAMP. It represents how OSS components can be assembled into a full production-grade technical infrastructure at near-zero software cost.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 8</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Scalability</div>
+        <div class="vocab-def">The ability of a software system to handle increasing workloads — either by adding more resources or by redistributing work across many machines. A scalable system can grow from handling 100 users to 10 million users without requiring a complete rewrite. Linux is especially valued for scalability because the same OS runs on a $10 Raspberry Pi and on the world's fastest supercomputers, and can balance loads across thousands of machines simultaneously.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 8</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- KEY CONCEPTS -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-concepts">💡</div>
+      <div class="section-title">Key Concepts</div>
+    </div>
+    <div class="concept-list">
+
+      <div class="concept-card">
+        <div class="concept-title">Who Actually Builds OSS — and Why?</div>
+        <div class="concept-body">The old image of OSS as lonely programmers coding for fun is largely outdated. Today, <b>the majority of people working on open source projects are paid by commercially motivated employers</b>. Companies like Google, IBM, Meta, Apple, and Microsoft pay engineers to contribute to Linux, Python, Android, and thousands of other OSS projects.<br><br>
+        Why would a company contribute to free software? Several reasons:<br>
+        • <b>Shared infrastructure costs:</b> Everyone needs a reliable OS. Splitting the development cost of Linux across thousands of companies is far cheaper than each building a proprietary OS alone — like splitting a pizza instead of everyone buying their own.<br>
+        • <b>Wedge strategy:</b> Oracle gives Linux away free to undercut Microsoft. Every customer running Linux on Oracle hardware is a customer not buying Microsoft software.<br>
+        • <b>Network effects:</b> More contributors = better, more secure software = more users = more contributors. OSS quality improves as its community grows.<br>
+        • <b>Talent and reputation:</b> Firms that contribute to high-profile OSS projects attract top engineering talent.</div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-title">Why Firms Choose OSS: The Six Benefits</div>
+        <div class="concept-body">
+        <div class="benefit-grid">
+          <div class="benefit-tile">
+            <div class="benefit-title">💰 Cost</div>
+            <div class="benefit-body">Barclays cut software costs by 90% switching to OSS. E*TRADE saved $13M/yr. Amazon cited OSS as key to $20M in tech savings.</div>
+          </div>
+          <div class="benefit-tile">
+            <div class="benefit-title">🐛 Reliability</div>
+            <div class="benefit-body">CMU's CyLab found Linux code 200x less buggy than commercial alternatives. More eyes on the code = fewer errors surviving undetected.</div>
+          </div>
+          <div class="benefit-tile">
+            <div class="benefit-title">🔒 Security</div>
+            <div class="benefit-body">Open code means vulnerabilities are found and patched faster. Government agencies value being able to audit the code themselves rather than trusting a vendor.</div>
+          </div>
+          <div class="benefit-tile">
+            <div class="benefit-title">📈 Scalability</div>
+            <div class="benefit-body">Linux runs on a $10 Raspberry Pi and a $500M supercomputer. E*TRADE's OSS infrastructure held up during record Fed-driven trading spikes when rivals' systems failed.</div>
+          </div>
+          <div class="benefit-tile">
+            <div class="benefit-title">🔗 Interoperability</div>
+            <div class="benefit-body">OSS products use open standards (like PDF) that work across any device, OS, or platform — no vendor lock-in.</div>
+          </div>
+          <div class="benefit-tile">
+            <div class="benefit-title">⚡ Speed to Market</div>
+            <div class="benefit-body">Motorola used OSS to accelerate phone development. The Zimbra team built their first email product in months using ~40 blocks of free, reusable OSS code.</div>
+          </div>
+        </div>
+        </div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-title">"Given Enough Eyeballs, All Bugs Are Shallow"</div>
+        <div class="concept-body">This phrase — from open source pioneer Eric Raymond — means: the more developers who can read a program's source code, the more likely any error (bug) is to be spotted and fixed quickly. With proprietary software, only the company's own engineers can see the code. With OSS, potentially millions of developers worldwide are reading it constantly.<br><br>
+        <b>Why it matters for firms adopting OSS:</b> Popular, widely-used OSS projects (Linux, Apache, Python) benefit from massive scrutiny and tend to be extremely reliable and secure. But the phrase also has a dangerous flip side — <b>Heartbleed</b>.<br><br>
+        In 2014, a critical security flaw was found in OpenSSL — the encryption toolkit used by two-thirds of all websites. Despite being used in 30 billion annual e-commerce transactions, it was maintained by essentially two unpaid volunteers with almost no budget. The flaw had sat undetected for years. The lesson for managers: <b>popularity alone does not guarantee that enough eyeballs are actually watching.</b> Before adopting any OSS, audit who maintains it and how well-resourced that effort is.</div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-title">How OSS Companies Actually Make Money</div>
+        <div class="concept-body">If the software is free, how do you build a billion-dollar business? Several proven models:
+        <div class="biz-list">
+          <div class="biz-item"><span class="biz-badge">Support</span>Red Hat earns $3B/year selling subscriptions for software updates, patches, and enterprise support for Linux. The software is free; the expert help costs money.</div>
+          <div class="biz-item"><span class="biz-badge">Premium Add-ons</span>MongoDB gives the core database away free but charges firms that run its management software on more than 8 servers — the free version gets you in the door, the premium features keep enterprises paying.</div>
+          <div class="biz-item"><span class="biz-badge">Hosted Cloud</span>Docker sells managed hosting so firms can use its OSS container technology without running it themselves. You use the free code, but pay them to manage it for you in the cloud.</div>
+          <div class="biz-item"><span class="biz-badge">Hardware Sales</span>IBM gives away Linux support to pull customers toward IBM hardware and consulting services. Every dollar a customer saves on Microsoft software is a dollar available to spend on IBM.</div>
+          <div class="biz-item"><span class="biz-badge">Wedge Strategy</span>Oracle provides Linux for free — specifically to drive a wedge between Microsoft and its customers. Oracle and Microsoft compete in databases and enterprise software, so weakening Microsoft's OS grip benefits Oracle directly.</div>
+        </div>
+        </div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-title">OSS, Hardware Sales, and Entrepreneurship</div>
+        <div class="concept-body"><b>Impact on hardware sales:</b> In the pre-Linux era, every major hardware vendor (IBM, HP, Sun, etc.) maintained its own proprietary, incompatible Unix variant. Each market was too small to attract much third-party software. Linux unified them into one massive standard — suddenly all hardware runs the same OS, software developers write once and reach everyone, and hardware firms can compete on performance and service rather than on OS lock-in.<br><br>
+        <b>Impact on startups and small firms:</b> This is perhaps OSS's most democratizing effect. A startup in 2005 needed millions of dollars just to license server OS and database software before writing a single line of their actual product. Today, a two-person startup can download Linux, Apache, MySQL, Python, and dozens of other enterprise-grade tools for free — and deploy them on AWS (paying only for what they use). This has dramatically <b>lowered the capital barrier to starting a tech company</b>, enabling the explosion of startups we've seen over the past two decades.</div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-title">The Risks of OSS: TCO and Beyond</div>
+        <div class="concept-body">Free software is not always cheap software. Managers must evaluate OSS honestly:
+        <div class="risk-grid">
+          <div class="risk-tile">
+            <div class="risk-title">⚠️ High TCO</div>
+            <div class="risk-body">Complex OSS (like desktop Linux) may require expensive IT expertise to install, configure, and maintain — offsetting the zero license cost entirely.</div>
+          </div>
+          <div class="risk-tile">
+            <div class="risk-title">⚠️ Support Uncertainty</div>
+            <div class="risk-body">Without a paid support contract, you're relying on a volunteer community that may not respond to your urgent issue on your timeline.</div>
+          </div>
+          <div class="risk-tile">
+            <div class="risk-title">⚠️ Legal Exposure</div>
+            <div class="risk-body">Microsoft once claimed Linux violated 235 of its patents and collected licensing fees from Samsung, Fuji, and Xerox. OSS licenses (GPL, Apache, etc.) have varying legal obligations firms must track carefully.</div>
+          </div>
+          <div class="risk-tile">
+            <div class="risk-title">⚠️ Abandonment Risk</div>
+            <div class="risk-body">Less popular OSS projects may lose their contributor community entirely. A product you've built your system on can become unmaintained overnight.</div>
+          </div>
+        </div>
+        <br>The Heartbleed lesson applies here too: <b>just because something is widely used doesn't mean it's well-maintained.</b> Always audit who supports the OSS you adopt.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-quiz">🎯</div>
+      <div class="section-title">Practice Quiz</div>
+    </div>
+
+    <div class="score-bar" style="margin-bottom:24px;">
+      <div>
+        <div class="score-text">Your score</div>
+        <div class="score-num" id="score">0 / 5</div>
+      </div>
+      <button class="reset-btn" onclick="resetQuiz()">Reset Quiz</button>
+    </div>
+
+    <div class="quiz-container">
+
+      <!-- Q1 -->
+      <div class="quiz-q" id="q1">
+        <div class="q-number">Question 1</div>
+        <div class="q-text">A manager says: "We should adopt this open source database — it's free, so it'll definitely be cheaper than our current paid solution." What critical concept is she overlooking?</div>
+        <div class="options">
+          <div class="option" onclick="answer(this,'q1',false)"><div class="opt-letter">A</div> Open source software always costs more than commercial alternatives once hidden fees are included.</div>
+          <div class="option" onclick="answer(this,'q1',true)"><div class="opt-letter">B</div> She's ignoring Total Cost of Ownership (TCO) — a zero license price doesn't account for ongoing costs like IT expertise, training, maintenance, and support, which can exceed the savings.</div>
+          <div class="option" onclick="answer(this,'q1',false)"><div class="opt-letter">C</div> She's correct — open source always reduces costs because the software itself is the largest expense in any technology budget.</div>
+          <div class="option" onclick="answer(this,'q1',false)"><div class="opt-letter">D</div> She's overlooking that open source databases are illegal for commercial use.</div>
+        </div>
+        <div class="feedback" id="q1-fb">✓ Correct! TCO is exactly the trap here. A "free" OSS database may require a specialized DBA to configure it, expensive consulting to troubleshoot issues, and costly retraining for your team. Desktop Linux is the classic example — the OS is free, but the support burden can actually make it more expensive than Windows in enterprise settings.</div>
+        <div class="feedback wrong-fb" id="q1-wfb">✗ Not quite. The concept she's missing is Total Cost of Ownership (TCO). A $0 price tag only captures the purchase price. The real cost includes training staff, hiring or contracting support, maintaining the system, and handling outages — all of which can add up to far more than a paid solution with bundled support.</div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="quiz-q" id="q2">
+        <div class="q-number">Question 2</div>
+        <div class="q-text">Oracle gives away its Linux distribution completely free of charge. This seems financially irrational for a profit-seeking company. What is Oracle's actual strategic motivation?</div>
+        <div class="options">
+          <div class="option" onclick="answer(this,'q2',false)"><div class="opt-letter">A</div> Oracle gives away Linux as a charity initiative with no expected financial return.</div>
+          <div class="option" onclick="answer(this,'q2',false)"><div class="opt-letter">B</div> Oracle makes money by embedding hidden advertising inside the free Linux distribution.</div>
+          <div class="option" onclick="answer(this,'q2',true)"><div class="opt-letter">C</div> Oracle uses free Linux to weaken Microsoft's OS market share — since Oracle and Microsoft compete in databases and enterprise software, every customer Oracle pulls away from Microsoft Windows is a potential Oracle customer. Oracle then sells high-margin Linux support contracts and hardware services.</div>
+          <div class="option" onclick="answer(this,'q2',false)"><div class="opt-letter">D</div> Oracle is legally required to distribute Linux for free due to open source licensing obligations.</div>
+        </div>
+        <div class="feedback" id="q2-fb">✓ Correct! This is the "wedge strategy" — use free OSS to drive a wedge between a competitor and its customers. Oracle sells ERP, databases, and cloud services that compete directly with Microsoft's stack. Weaning customers off Windows OS weakens Microsoft's grip on the enterprise, giving Oracle an opening. Oracle also sells Linux support contracts for up to $500,000 — making the "free" OS a lead-generation tool.</div>
+        <div class="feedback wrong-fb" id="q2-wfb">✗ Not quite. Oracle's move is deliberate competitive strategy, not charity. Microsoft and Oracle compete head-to-head in databases and enterprise software. By making a free Linux alternative to Windows, Oracle pulls customers away from Microsoft's ecosystem — and then recaptures revenue through premium Linux support contracts, hardware sales, and other Oracle services.</div>
+      </div>
+
+      <!-- Q3 -->
+      <div class="quiz-q" id="q3">
+        <div class="q-number">Question 3</div>
+        <div class="q-text">The Heartbleed bug exposed a critical security flaw in OpenSSL — the encryption toolkit used by two-thirds of the world's websites. What makes Heartbleed the most important managerial lesson in this chapter about OSS adoption?</div>
+        <div class="options">
+          <div class="option" onclick="answer(this,'q3',false)"><div class="opt-letter">A</div> It proves that open source software is fundamentally less secure than commercial software and should be avoided in enterprise settings.</div>
+          <div class="option" onclick="answer(this,'q3',false)"><div class="opt-letter">B</div> It shows that any software using encryption is inherently vulnerable, regardless of whether it's open source or commercial.</div>
+          <div class="option" onclick="answer(this,'q3',true)"><div class="opt-letter">C</div> It shows that widespread adoption does not guarantee adequate maintenance — OpenSSL was used in 30 billion annual transactions but maintained by essentially two unpaid volunteers. Managers must audit who maintains any OSS they adopt, not just how popular it is.</div>
+          <div class="option" onclick="answer(this,'q3',false)"><div class="opt-letter">D</div> It shows that the "many eyeballs" principle always works — the bug was caught quickly because so many developers were watching the code.</div>
+        </div>
+        <div class="feedback" id="q3-fb">✓ Correct! Heartbleed is a direct contradiction of "given enough eyeballs, all bugs are shallow" — because in reality, almost no one was watching OpenSSL despite its enormous importance. The managerial lesson: before deploying OSS, ask who maintains it, how funded that team is, and how actively it is patched. Popularity ≠ safety.</div>
+        <div class="feedback wrong-fb" id="q3-wfb">✗ Not quite. Heartbleed isn't an argument against OSS broadly — it's an argument against blind trust in any software just because it's widely used. OpenSSL had enormous adoption but almost zero oversight. The key managerial lesson is to audit the support structure behind any OSS you adopt, not just check how many companies use it.</div>
+      </div>
+
+      <!-- Q4 -->
+      <div class="quiz-q" id="q4">
+        <div class="q-number">Question 4</div>
+        <div class="q-text">Before Linux, every major hardware vendor (IBM, HP, Sun) maintained its own incompatible version of Unix. How did Linux's rise as a common open source standard change the economics of the hardware industry?</div>
+        <div class="options">
+          <div class="option" onclick="answer(this,'q4',false)"><div class="opt-letter">A</div> Linux hurt hardware sales by giving users a free OS, making them less likely to upgrade hardware.</div>
+          <div class="option" onclick="answer(this,'q4',true)"><div class="opt-letter">B</div> Linux unified previously fragmented markets into one large standard, allowing hardware vendors to stop competing on OS and instead compete on performance and services — while also attracting far more third-party software developers who now had one unified platform to build for.</div>
+          <div class="option" onclick="answer(this,'q4',false)"><div class="opt-letter">C</div> Linux had no meaningful impact on hardware economics since hardware and software markets are completely separate.</div>
+          <div class="option" onclick="answer(this,'q4',false)"><div class="opt-letter">D</div> Linux eliminated the need for hardware vendors to sell servers, since Linux runs on consumer-grade PCs.</div>
+        </div>
+        <div class="feedback" id="q4-fb">✓ Correct! When every hardware maker had its own incompatible Unix, each had a tiny, fragmented market that wasn't attractive to software developers. Linux unified these fragmented markets into one massive standard. Now IBM, HP, and Dell all run Linux — and all that third-party application software suddenly works on all their hardware. Hardware vendors refocused competition on performance, reliability, and services — where they could actually differentiate.</div>
+        <div class="feedback wrong-fb" id="q4-wfb">✗ Not quite. Linux actually helped hardware sales by creating a unified, attractive platform. Pre-Linux, each hardware vendor's proprietary Unix created a small, isolated market that didn't attract enough software developers or buyers to be economically compelling. Linux unified all these fragments, making the total addressable market far larger and shifting hardware competition to performance and services.</div>
+      </div>
+
+      <!-- Q5 -->
+      <div class="quiz-q" id="q5">
+        <div class="q-number">Question 5</div>
+        <div class="q-text">A two-person startup today can build and launch a production web application with near-zero software licensing costs using free OSS tools (Linux, MySQL, Python, etc.) deployed on AWS — paying only for what they use. Twenty years ago, the same startup would have needed millions in capital just for software licenses before writing a single line of their actual product. What economic concept best explains why this transformation matters most for entrepreneurship?</div>
+        <div class="options">
+          <div class="option" onclick="answer(this,'q5',false)"><div class="opt-letter">A</div> It matters because software quality has declined — startups now build inferior products compared to 20 years ago.</div>
+          <div class="option" onclick="answer(this,'q5',false)"><div class="opt-letter">B</div> It matters primarily because venture capital firms now prefer funding startups that use open source tools.</div>
+          <div class="option" onclick="answer(this,'q5',true)"><div class="opt-letter">C</div> OSS combined with cloud computing has dramatically lowered the capital barrier to entry for new firms — enabling startups to scale quickly with less investment, intensifying competition across virtually every software-dependent industry.</div>
+          <div class="option" onclick="answer(this,'q5',false)"><div class="opt-letter">D</div> It matters only for consumer apps — enterprise software still requires large capital investment regardless of OSS availability.</div>
+        </div>
+        <div class="feedback" id="q5-fb">✓ Correct! This is one of the biggest structural changes OSS and cloud computing created together. When the cost of "infrastructure" falls to near-zero, the barrier that once protected incumbents — "we can afford expensive servers and software licenses, you can't" — disappears. Today, a dorm room startup has access to the same enterprise-grade stack (Linux, PostgreSQL, Python, AWS) that Fortune 500 companies use. This has fueled the explosion in startups and intensified disruption risk for established players in every industry.</div>
+        <div class="feedback wrong-fb" id="q5-wfb">✗ Not quite. The key here is capital barriers to entry. When licensing enterprise software required millions upfront, it was a structural advantage for large incumbents — small firms simply couldn't afford to start. OSS + cloud eliminated that structural moat. The startup cost barrier dropped from millions to effectively zero for software infrastructure, enabling rapid startup formation and dramatically increasing competitive pressure on incumbents.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer><p>Chapter 8 · Open Source Software · Study Guide</p></footer>
+</div>
+
+<script>
+  let answered = {q1:false,q2:false,q3:false,q4:false,q5:false};
+  let correctCount = 0;
+
+  function answer(el, qid, isCorrect) {
+    if (answered[qid]) return;
+    answered[qid] = true;
+    const opts = el.closest('.options').querySelectorAll('.option');
+    opts.forEach(o => o.style.pointerEvents = 'none');
+    if (isCorrect) {
+      el.classList.add('correct');
+      correctCount++;
+      document.getElementById(qid+'-fb').style.display = 'block';
+    } else {
+      el.classList.add('wrong');
+      document.getElementById(qid+'-wfb').style.display = 'block';
+      opts.forEach(o => {
+        if (o.getAttribute('onclick') && o.getAttribute('onclick').includes('true')) o.classList.add('correct');
+      });
+    }
+    document.getElementById('score').textContent = correctCount + ' / 5';
+  }
+
+  function resetQuiz() {
+    answered = {q1:false,q2:false,q3:false,q4:false,q5:false};
+    correctCount = 0;
+    document.getElementById('score').textContent = '0 / 5';
+    document.querySelectorAll('.option').forEach(o => {
+      o.classList.remove('correct','wrong');
+      o.style.pointerEvents = '';
+    });
+    document.querySelectorAll('.feedback').forEach(f => f.style.display = 'none');
+  }
+</script>
+</body>
+</html>
