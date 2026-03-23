@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chapter 7 — Understanding Software</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0d0f1a; --surface: #13162a; --border: #1e2340;
+      --accent: #e8b84b; --accent2: #5b8dee; --text: #e8eaf0;
+      --muted: #7a7f9a; --green: #4cbb8a; --red: #e05c6a;
+    }
+    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background-image: linear-gradient(rgba(91,141,238,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(91,141,238,0.03) 1px, transparent 1px);
+      background-size: 60px 60px; pointer-events: none; z-index: 0;
+    }
+    .wrapper { position: relative; z-index: 1; max-width: 820px; margin: 0 auto; padding: 48px 24px 80px; }
+
+    .back { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); text-decoration: none; font-size: 0.85rem; margin-bottom: 40px; transition: color 0.2s; }
+    .back:hover { color: var(--accent); }
+    .back::before { content: '←'; }
+
+    .ch-label { font-size: 11px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); }
+    h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; margin: 10px 0 6px; line-height: 1.15; }
+    .ch-subtitle { color: var(--muted); font-size: 0.95rem; font-weight: 300; }
+    .divider { width: 50px; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); margin: 24px 0; }
+
+    .section { margin-top: 52px; }
+    .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+    .section-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+    .icon-vocab { background: rgba(232,184,75,0.12); }
+    .icon-concepts { background: rgba(91,141,238,0.12); }
+    .icon-quiz { background: rgba(76,187,138,0.12); }
+    .section-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; }
+
+    .vocab-list { display: flex; flex-direction: column; gap: 12px; }
+    .vocab-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; }
+    .vocab-term { font-weight: 500; font-size: 1rem; color: var(--accent); margin-bottom: 6px; }
+    .vocab-def { font-size: 0.9rem; color: var(--text); line-height: 1.65; }
+    .vocab-cite { font-size: 0.78rem; color: var(--muted); margin-top: 8px; font-style: italic; }
+    .analogy-box { margin-top: 10px; background: rgba(232,184,75,0.06); border-left: 2px solid rgba(232,184,75,0.4); padding: 8px 12px; border-radius: 0 6px 6px 0; font-size: 0.83rem; color: var(--accent); line-height: 1.5; }
+
+    .concept-list { display: flex; flex-direction: column; gap: 12px; }
+    .concept-card { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent2); border-radius: 0 12px 12px 0; padding: 18px 20px; }
+    .concept-title { font-weight: 500; color: var(--accent2); font-size: 0.95rem; margin-bottom: 8px; }
+    .concept-body { font-size: 0.9rem; line-height: 1.7; color: var(--text); }
+    .concept-body b { color: var(--accent); font-weight: 500; }
+
+    /* Layer cake visual */
+    .layer-cake { margin: 16px 0 4px; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+    .layer { padding: 12px 18px; font-size: 0.88rem; font-weight: 500; text-align: center; }
+    .layer-user     { background: rgba(76,187,138,0.15);  color: #4cbb8a; }
+    .layer-app      { background: rgba(91,141,238,0.15);  color: #5b8dee; }
+    .layer-os       { background: rgba(232,184,75,0.15);  color: #e8b84b; }
+    .layer-hw       { background: rgba(224,92,106,0.15);  color: #e05c6a; }
+    .layer-label    { font-size: 0.72rem; font-weight: 400; opacity: 0.75; margin-top: 2px; }
+
+    /* ERP grid */
+    .erp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-top: 12px; }
+    .erp-tile { background: rgba(91,141,238,0.07); border: 1px solid rgba(91,141,238,0.18); border-radius: 8px; padding: 12px 14px; }
+    .erp-tile-title { font-size: 0.82rem; font-weight: 500; color: var(--accent2); margin-bottom: 4px; }
+    .erp-tile-body  { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+
+    .quiz-container { display: flex; flex-direction: column; gap: 28px; }
+    .quiz-q { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px 24px 20px; }
+    .q-number { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); margin-bottom: 10px; }
+    .q-text { font-size: 1rem; font-weight: 500; line-height: 1.55; margin-bottom: 18px; }
+    .options { display: flex; flex-direction: column; gap: 8px; }
+    .option { display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 0.88rem; line-height: 1.5; transition: border-color 0.2s, background 0.2s; user-select: none; }
+    .option:hover { border-color: var(--accent2); background: rgba(91,141,238,0.06); }
+    .option.correct { border-color: var(--green) !important; background: rgba(76,187,138,0.1) !important; }
+    .option.wrong   { border-color: var(--red)   !important; background: rgba(224,92,106,0.08) !important; }
+    .opt-letter { min-width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; flex-shrink: 0; margin-top: 1px; }
+    .option.correct .opt-letter { background: var(--green); border-color: var(--green); color: #fff; }
+    .option.wrong   .opt-letter { background: var(--red);   border-color: var(--red);   color: #fff; }
+    .feedback { margin-top: 12px; font-size: 0.83rem; color: var(--green); display: none; line-height: 1.55; padding: 10px 12px; background: rgba(76,187,138,0.06); border-radius: 8px; }
+    .feedback.wrong-fb { color: #f09a6a; background: rgba(224,92,106,0.06); }
+
+    .score-bar { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    .score-text { font-size: 0.95rem; color: var(--muted); }
+    .score-num  { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; color: var(--accent); }
+    .reset-btn  { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 8px 18px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-family: 'DM Sans', sans-serif; transition: border-color 0.2s, color 0.2s; }
+    .reset-btn:hover { border-color: var(--accent); color: var(--accent); }
+    footer { text-align: center; margin-top: 64px; color: var(--muted); font-size: 0.8rem; }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+  <a href="index.html" class="back">Back to all chapters</a>
+
+  <div class="ch-label">Chapter 07</div>
+  <h1>Understanding Software</h1>
+  <p class="ch-subtitle">From operating systems to enterprise software — why it all matters to managers</p>
+  <div class="divider"></div>
+
+  <!-- VOCAB -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-vocab">📖</div>
+      <div class="section-title">Vocabulary</div>
+    </div>
+    <div class="vocab-list">
+
+      <div class="vocab-card">
+        <div class="vocab-term">Software</div>
+        <div class="vocab-def">A computer program, or collection of programs — a precise set of instructions that tells hardware what to do. Without software, hardware is just expensive metal and plastic. Software is what enables a device to browse the web, process payroll, recognize your voice, or run a factory. It is everywhere: a car has 10+ million lines of code; an EV has 100+ million lines — more than Windows or macOS.</div>
+        <div class="analogy-box">🧠 Analogy: Hardware is the piano. Software is the sheet music. Without the music, the piano just sits there.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 7</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Hardware</div>
+        <div class="vocab-def">The physical components of information technology — equipment you can physically touch. This includes computers, storage devices, networking equipment, input devices (keyboard, mouse), and output devices (monitor, printer). Hardware executes software instructions but cannot do anything useful on its own without software directing it.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 7</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Operating System (OS)</div>
+        <div class="vocab-def">Software that controls a computer's hardware and provides a common set of standards for developing and running applications. The OS manages memory, files, input/output devices, and security. Examples: Windows, macOS, iOS, Android, Linux. Every computing device — phones, servers, game consoles, smart appliances — runs some form of OS.</div>
+        <div class="analogy-box">🧠 Analogy: The OS is the building manager of an office. It controls the electricity, elevators, and hallways (hardware), so that tenants (applications) can just focus on their own work without worrying about the building's infrastructure.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 7; Microsoft Docs</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Graphical User Interface (GUI)</div>
+        <div class="vocab-def">The visual, interactive layer through which users interact with a computing device. GUI elements include windows, scroll bars, buttons, menus, icons, and dialog boxes. The OS enforces a consistent look and feel across all applications — which is why scroll bars and save dialogs look similar in every Windows app. This consistency lowers training costs and reduces user errors. Pronounced "gooey."</div>
+        <div class="analogy-box">🧠 Analogy: The GUI is the cockpit dashboard. Without it, you'd have to type raw commands to fly the plane. With it, you just press labeled buttons.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 7</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Firmware</div>
+        <div class="vocab-def">Software stored permanently on non-volatile memory chips (ROM) inside a device, rather than on a hard drive. Firmware controls low-level hardware functions and often holds the entire OS for small or specialized devices (like routers, printers, or smart appliances). The BIOS — the base-level code that boots a computer — is a classic example of firmware.</div>
+        <div class="analogy-box">🧠 Analogy: Firmware is the factory-installed "muscle memory" of a device. It knows how to turn on and find the OS before any user touches it.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 7</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Embedded Systems</div>
+        <div class="vocab-def">Special-purpose software (often stored as firmware) designed and built into physical products to make them "smarter." Embedded systems enable devices to share usage data, diagnose problems, receive remote updates, or communicate with other systems — without a user needing to intervene. Found in everything from elevators and cars to pacemakers and smart thermostats.</div>
+        <div class="analogy-box">🧠 Analogy: An embedded system is like a built-in doctor inside a machine — monitoring its own vitals and calling for help before anything actually breaks.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 7 (Otis Elevator example)</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Desktop Software</div>
+        <div class="vocab-def">Applications installed on a personal computer, typically designed for a single user performing a specific task. Examples: Microsoft Word, Excel, Photoshop, Chrome, video games. Desktop software runs "on top of" the operating system and uses the OS's services (like saving files, displaying graphics) to do its job.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 7</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Enterprise Software</div>
+        <div class="vocab-def">Applications that address the needs of multiple simultaneous users throughout an organization or workgroup. Unlike desktop software (built for one person), enterprise software manages shared business processes — inventory, payroll, customer records, supply chains. These systems are often costly, complex, and critical to a company's operations.</div>
+        <div class="analogy-box">🧠 Analogy: Desktop software is a single employee's toolbox. Enterprise software is the entire company's shared operating infrastructure — like the plumbing and electrical systems of a building that everyone depends on.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 7</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">ERP — Enterprise Resource Planning</div>
+        <div class="vocab-def">A software package that integrates many core business functions — accounting, finance, inventory, human resources, manufacturing, sales — into one unified system with a shared database. ERP eliminates data silos by ensuring all departments see the same, real-time information. Leading vendors: SAP and Oracle. Average large company spend: ~$15 million, with some installations exceeding hundreds of millions.</div>
+        <div class="analogy-box">🧠 Analogy: ERP is the central nervous system of a company. Every department (brain region) sends and receives information through one shared network, so the whole body reacts in coordination.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 7; SAP.com</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">DBMS — Database Management System</div>
+        <div class="vocab-def">Software for creating, storing, organizing, retrieving, and maintaining data. The DBMS sits between the OS and the enterprise applications — it's the shared data layer that multiple programs (ERP, CRM, BI) all read from and write to. When all systems use the same DBMS, a sale recorded by the point-of-sale system automatically updates inventory, accounting, and reporting — with no manual re-entry.</div>
+        <div class="analogy-box">🧠 Analogy: The DBMS is the shared filing room in the middle of an office. Every department drops off and retrieves records from the same place, so everyone's always working from the same files — no duplicates, no conflicts.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 7</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">CRM — Customer Relationship Management</div>
+        <div class="vocab-def">Enterprise software used to manage and analyze customer interactions across sales, marketing, and customer service. A CRM tracks who your customers are, what they've bought, what they've complained about, and what they're likely to buy next. The goal: build and maintain profitable customer relationships. Salesforce is the most well-known CRM vendor.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 7; Salesforce.com/crm</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">SCM — Supply Chain Management</div>
+        <div class="vocab-def">Enterprise software that helps a firm manage its value chain — from raw materials flowing into the firm, through production, to finished products delivered to customers. SCM systems coordinate suppliers, manufacturers, warehouses, and distributors to ensure the right products arrive at the right place at the right time at minimum cost.</div>
+        <div class="analogy-box">🧠 Analogy: SCM is the GPS + logistics coordinator for everything a company makes and moves. It tracks every ingredient from farm to fork.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 7</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">BI — Business Intelligence</div>
+        <div class="vocab-def">Systems that use data collected by other enterprise systems (ERP, CRM, SCM) to generate reports, dashboards, and analyses that support organizational decision-making. BI doesn't create or change data — it reads data from across the organization and turns it into actionable insight. Example: a BI dashboard showing which product lines are most profitable by region.</div>
+        <div class="analogy-box">🧠 Analogy: If ERP is the company's nervous system collecting data, BI is the brain interpreting that data and deciding what to do next.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 7</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">API — Application Programming Interface</div>
+        <div class="vocab-def">Published rules and protocols that allow one software program to request services from another — even across different organizations. APIs let companies turn their products into platforms. Example: Expedia publishes APIs so that partner airlines (United, Aer Lingus) can offer hotel bookings inside their own apps, powered by Expedia's inventory — generating ~$2 billion in additional annual revenue for Expedia.</div>
+        <div class="analogy-box">🧠 Analogy: An API is like a restaurant's order window. You don't need to know how the kitchen works — you just follow the menu (the API rules) to request what you want and receive a result.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 7</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- KEY CONCEPTS -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-concepts">💡</div>
+      <div class="section-title">Key Concepts</div>
+    </div>
+    <div class="concept-list">
+
+      <div class="concept-card">
+        <div class="concept-title">Why Managers Must Understand Software</div>
+        <div class="concept-body">Software is not just an IT department problem — it directly shapes a firm's strategy, cost structure, and competitive position. Managers who understand software can:<br><br>
+        • Evaluate the <b>strategic value of technology investments</b> rather than blindly trusting IT vendors<br>
+        • Anticipate <b>security vulnerabilities</b> created by poorly integrated systems<br>
+        • Understand the risks of <b>enterprise system failures</b> (FoxMeyer Drug went bankrupt; Hershey lost $466M in revenue during Halloween from a bad ERP rollout)<br>
+        • Make smarter decisions about <b>mergers and acquisitions</b> — McKinsey found many M&As fail because firms can't merge incompatible IT systems<br><br>
+        A firm without technologically literate leaders in the boardroom is setting itself up for failure.</div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-title">The Software Layer Cake</div>
+        <div class="concept-body">Think of software as a layer cake — each layer depends on the one below it:
+        <div class="layer-cake">
+          <div class="layer layer-user">👤 Users<div class="layer-label">The people using the system</div></div>
+          <div class="layer layer-app">📊 Applications (Desktop & Enterprise)<div class="layer-label">Word, Excel, ERP, CRM, BI — where real work happens</div></div>
+          <div class="layer layer-os">⚙️ Operating System<div class="layer-label">Windows, macOS, iOS, Android — controls hardware, sets standards</div></div>
+          <div class="layer layer-hw">🔧 Hardware<div class="layer-label">CPU, RAM, storage, networking — the physical foundation</div></div>
+        </div>
+        The OS creates a stable platform so applications don't have to worry about managing hardware directly. Applications build on top of the OS's services. Users interact only with the top layer — but decisions made at every layer affect cost, security, flexibility, and performance.</div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-title">The Four Ways to Classify Software</div>
+        <div class="concept-body">When someone asks "what kind of software is it?", there are four useful lenses:<br><br>
+        <b>1. By role in the stack:</b> Is it an OS, a middleware/database layer, or an application?<br>
+        <b>2. By user scope:</b> Is it desktop software (one user) or enterprise software (many users across an org)?<br>
+        <b>3. By deployment:</b> Is it installed locally, stored on firmware/chips, or delivered via the cloud (SaaS)?<br>
+        <b>4. By ownership model:</b> Is it proprietary (paid, closed-source), open source (free, community-built), or custom-built in-house?<br><br>
+        Each classification has different implications for cost, vendor lock-in, security, and strategic flexibility.</div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-title">What the OS Does — For Users and Programmers</div>
+        <div class="concept-body"><b>For users:</b> The OS creates a consistent, predictable visual environment. Scroll bars, save dialogs, and file browsers behave the same across all apps — reducing learning time, training costs, and errors. You don't need to learn a new interface for every program.<br><br>
+        <b>For programmers:</b> The OS provides a common set of commands to interact with hardware. A game developer building for Nintendo Switch doesn't write their own code to play sounds or save files — they call the OS's built-in tools. This makes software faster to write, more reliable, and cheaper to develop. When Apple gave developers strong OS tools via iOS and a distribution channel via the App Store, 50,000 apps appeared in under a year — a textbook example of how a well-designed OS creates platform network effects.</div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-title">ERP: The Business Functions It Touches</div>
+        <div class="concept-body">A well-implemented ERP system can coordinate nearly every department in a company simultaneously:
+        <div class="erp-grid">
+          <div class="erp-tile"><div class="erp-tile-title">💰 Sales</div><div class="erp-tile-body">Verify credit, calculate pricing in any currency, generate orders automatically</div></div>
+          <div class="erp-tile"><div class="erp-tile-title">📦 Inventory</div><div class="erp-tile-body">Check real-time stock levels across warehouses during a sales call</div></div>
+          <div class="erp-tile"><div class="erp-tile-title">🏭 Manufacturing</div><div class="erp-tile-body">Trigger production orders automatically when a sale is confirmed</div></div>
+          <div class="erp-tile"><div class="erp-tile-title">👥 Human Resources</div><div class="erp-tile-body">Flag hiring needs when order volume exceeds current workforce capacity</div></div>
+          <div class="erp-tile"><div class="erp-tile-title">🛒 Purchasing</div><div class="erp-tile-body">Auto-reorder raw materials from suppliers when inventory runs low</div></div>
+          <div class="erp-tile"><div class="erp-tile-title">📊 Decision Support</div><div class="erp-tile-body">Surface trends (e.g., European sales are booming) to guide strategy</div></div>
+        </div>
+        </div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-title">The Real Risks of ERP: Don't Ignore the People Layer</div>
+        <div class="concept-body">ERP installations are notoriously difficult. The average large company spends ~$15 million, and failures are common and catastrophic:<br><br>
+        • <b>FoxMeyer Drug</b> — $6B company. Failed ERP led to bankruptcy; sold for under $80M one year later.<br>
+        • <b>Hershey Foods</b> — Botched rollout caused $466M revenue shortfall; couldn't get candy to stores before Halloween.<br>
+        • <b>Avon</b> — Spent $125M on a system sales reps refused to use; mass rep exodus followed.<br><br>
+        The pattern in every failure: firms focused obsessively on the <b>software and hardware</b> but ignored the equally critical components — <b>people, data, and procedures</b>. IS is made of five components: hardware, software, data, people, and procedures. Lose sight of any one and the whole system can collapse.</div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-title">Embedded Systems & Otis Elevator — Strategy in a Chip</div>
+        <div class="concept-body">Otis Elevator embeds software in its elevators, escalators, and walkways that automatically contacts Otis service centers when maintenance is needed. This creates multiple layers of competitive advantage:<br><br>
+        • <b>Switching costs:</b> Embedded systems make it harder for third parties to service Otis equipment, locking in the service revenue stream<br>
+        • <b>Cost efficiency:</b> Maintenance is triggered by actual need (low lubricant, worn parts), not guessed schedules<br>
+        • <b>Customer satisfaction:</b> Technicians are dispatched before clients even know there's a problem<br>
+        • <b>Product improvement:</b> Failure data feeds back to R&D to build better future products<br><br>
+        This is Moore's Law creating strategic value — cheap chips embedded in physical products, generating information advantages that competitors struggle to replicate.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-quiz">🎯</div>
+      <div class="section-title">Practice Quiz</div>
+    </div>
+
+    <div class="score-bar" style="margin-bottom:24px;">
+      <div>
+        <div class="score-text">Your score</div>
+        <div class="score-num" id="score">0 / 5</div>
+      </div>
+      <button class="reset-btn" onclick="resetQuiz()">Reset Quiz</button>
+    </div>
+
+    <div class="quiz-container">
+
+      <!-- Q1 -->
+      <div class="quiz-q" id="q1">
+        <div class="q-number">Question 1</div>
+        <div class="q-text">A developer is building a game for the Nintendo Switch. Instead of writing her own code to play audio, save files, and draw graphics, she calls functions built into the Switch's operating system. What does this best illustrate about the role of an OS?</div>
+        <div class="options">
+          <div class="option" onclick="answer(this,'q1',false)"><div class="opt-letter">A</div> The OS is unnecessary for games — developers only need it for business applications.</div>
+          <div class="option" onclick="answer(this,'q1',false)"><div class="opt-letter">B</div> The OS forces developers to write more code, since they must learn its specific commands.</div>
+          <div class="option" onclick="answer(this,'q1',true)"><div class="opt-letter">C</div> The OS provides a common set of hardware-control commands so developers don't have to reinvent basic functionality, making software faster to write, cheaper, and more reliable.</div>
+          <div class="option" onclick="answer(this,'q1',false)"><div class="opt-letter">D</div> The OS only benefits end users through the GUI — it provides no advantage to programmers.</div>
+        </div>
+        <div class="feedback" id="q1-fb">✓ Correct! This is exactly what an OS does for programmers. By providing standardized commands to control hardware (audio, storage, display), the OS lets developers focus on their actual product rather than re-solving solved problems. It also means games are more consistent, reliable, and easier to test.</div>
+        <div class="feedback wrong-fb" id="q1-wfb">✗ Not quite. One of the OS's two big jobs is providing programmers with a standard set of hardware-control tools. Without this, every developer would have to write their own audio engine, file system handler, etc. — massively increasing cost, time, and the chance of errors.</div>
+      </div>
+
+      <!-- Q2 -->
+      <div class="quiz-q" id="q2">
+        <div class="q-number">Question 2</div>
+        <div class="q-text">Colgate Palmolive's CIO said: "The day we turned the switch on, we dropped two days out of our order-to-delivery cycle." FoxMeyer Drug went bankrupt within a year of launching their system. Both were implementing ERP. What best explains why one succeeded and one failed?</div>
+        <div class="options">
+          <div class="option" onclick="answer(this,'q2',false)"><div class="opt-letter">A</div> Colgate used SAP while FoxMeyer used Oracle — SAP is inherently superior.</div>
+          <div class="option" onclick="answer(this,'q2',false)"><div class="opt-letter">B</div> ERP always fails in distribution companies but succeeds in consumer goods companies.</div>
+          <div class="option" onclick="answer(this,'q2',true)"><div class="opt-letter">C</div> Successful ERP implementations address all five IS components — hardware, software, data, people, and procedures. Failures typically occur when firms focus only on software/hardware and neglect how people actually work and how procedures need to change.</div>
+          <div class="option" onclick="answer(this,'q2',false)"><div class="opt-letter">D</div> FoxMeyer's failure was purely due to insufficient budget — ERP always succeeds with enough money.</div>
+        </div>
+        <div class="feedback" id="q2-fb">✓ Correct! The recurring theme across ERP disasters (FoxMeyer, Hershey, Avon, HP) is that firms treated it as a purely technical problem. IS has five components: hardware, software, data, people, and procedures. The "people and procedures" components are where most implementations fall apart — especially when the system ignores how workers actually do their jobs (see Avon's sales rep mass exodus).</div>
+        <div class="feedback wrong-fb" id="q2-wfb">✗ Not quite. ERP vendor choice matters far less than implementation approach. The consistent pattern in failures: organizations treat ERP as a software/hardware problem and ignore the people and procedures components. Avon is the clearest example — they spent $125M on a system their own sales reps refused to use because it didn't match how they actually work.</div>
+      </div>
+
+      <!-- Q3 -->
+      <div class="quiz-q" id="q3">
+        <div class="q-number">Question 3</div>
+        <div class="q-text">A retail company's point-of-sale system, inventory system, accounting system, and BI dashboard all read from and write to a single shared database. A sale recorded at the register instantly updates inventory counts, triggers a reorder if stock is low, and appears in the day's revenue report. Which component makes this possible?</div>
+        <div class="options">
+          <div class="option" onclick="answer(this,'q3',false)"><div class="opt-letter">A</div> The operating system, which synchronizes all applications automatically.</div>
+          <div class="option" onclick="answer(this,'q3',false)"><div class="opt-letter">B</div> The GUI, which provides a consistent interface across all systems.</div>
+          <div class="option" onclick="answer(this,'q3',true)"><div class="opt-letter">C</div> The DBMS (Database Management System), which stores and retrieves shared data so multiple applications can access a common, up-to-date dataset without duplication or conflict.</div>
+          <div class="option" onclick="answer(this,'q3',false)"><div class="opt-letter">D</div> The ERP vendor, which automatically links all systems sold together.</div>
+        </div>
+        <div class="feedback" id="q3-fb">✓ Correct! The DBMS is the shared data layer underneath enterprise applications. When all systems point to the same database, one update ripples through the entire organization instantly — no manual re-entry, no conflicting records. This is why companies without a common DBMS "often struggle to efficiently manage their value chain."</div>
+        <div class="feedback wrong-fb" id="q3-wfb">✗ Not quite. The OS handles hardware; the GUI handles visuals. The component that allows multiple enterprise applications to share one coherent set of data is the DBMS. Think of it as the shared filing room every department deposits into and withdraws from — ensuring everyone works from the same information.</div>
+      </div>
+
+      <!-- Q4 -->
+      <div class="quiz-q" id="q4">
+        <div class="q-number">Question 4</div>
+        <div class="q-text">Otis Elevator's embedded systems automatically alert service centers when an elevator needs maintenance — often before the client notices any problem. Beyond just convenience, which strategic advantage does this MOST directly create for Otis?</div>
+        <div class="options">
+          <div class="option" onclick="answer(this,'q4',false)"><div class="opt-letter">A</div> It reduces Otis's manufacturing costs by allowing cheaper parts to be used.</div>
+          <div class="option" onclick="answer(this,'q4',true)"><div class="opt-letter">B</div> It creates switching costs by making third-party servicing more difficult, locking in a recurring service revenue stream that competitors cannot easily replicate.</div>
+          <div class="option" onclick="answer(this,'q4',false)"><div class="opt-letter">C</div> It allows Otis to charge more for elevators at the point of sale.</div>
+          <div class="option" onclick="answer(this,'q4',false)"><div class="opt-letter">D</div> It primarily benefits customers with no direct financial benefit to Otis.</div>
+        </div>
+        <div class="feedback" id="q4-fb">✓ Correct! Embedded systems create switching costs — because the system is proprietary, third-party repair services can't easily compete with Otis's own technicians who receive the automated alerts. This locks in a lucrative service business on top of the hardware sale, and it gets better over time as R&D uses the failure data to build more reliable products.</div>
+        <div class="feedback wrong-fb" id="q4-wfb">✗ Not quite. The big strategic win here is switching costs and service lock-in. The embedded system creates a closed loop: only Otis receives the alerts, so only Otis (or authorized partners) can respond efficiently. This makes it structurally harder for third-party service firms to compete — which is worth far more strategically than just a customer convenience feature.</div>
+      </div>
+
+      <!-- Q5 -->
+      <div class="quiz-q" id="q5">
+        <div class="q-number">Question 5</div>
+        <div class="q-text">A startup builds its entire platform by connecting APIs from Stripe (payments), Google Maps (location), Twilio (SMS), and Expedia (travel inventory). It never builds any of these services itself. What does this approach best illustrate?</div>
+        <div class="options">
+          <div class="option" onclick="answer(this,'q5',false)"><div class="opt-letter">A</div> The startup is taking a high risk because APIs are proprietary and can never be shared with partners.</div>
+          <div class="option" onclick="answer(this,'q5',false)"><div class="opt-letter">B</div> This approach only works for large companies with big engineering teams.</div>
+          <div class="option" onclick="answer(this,'q5',false)"><div class="opt-letter">C</div> APIs are only useful for connecting internal systems within one organization — not across firms.</div>
+          <div class="option" onclick="answer(this,'q5',true)"><div class="opt-letter">D</div> APIs allow firms to assemble powerful capabilities quickly by connecting third-party services, turning other companies' platforms into building blocks — dramatically reducing development time and cost.</div>
+        </div>
+        <div class="feedback" id="q5-fb">✓ Correct! This is the modern power of APIs. Drizly (the alcohol delivery startup from the chapter) was built almost entirely from APIs connecting liquor stores, distributors, advertisers, and payment systems — and sold to Uber for $1.1 billion. APIs let small teams build at the speed and scale that previously required massive engineering departments.</div>
+        <div class="feedback wrong-fb" id="q5-wfb">✗ Not quite. APIs are specifically designed for cross-organization integration — that's their primary value. They allow firms to publish their capabilities so others can build on top of them. Expedia earns ~$2 billion annually from partners using its travel booking API. For startups, APIs are the ultimate shortcut: borrow proven capabilities and focus engineering effort on your actual differentiator.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer><p>Chapter 7 · Understanding Software · Study Guide</p></footer>
+</div>
+
+<script>
+  let answered = {q1:false,q2:false,q3:false,q4:false,q5:false};
+  let correctCount = 0;
+
+  function answer(el, qid, isCorrect) {
+    if (answered[qid]) return;
+    answered[qid] = true;
+    const opts = el.closest('.options').querySelectorAll('.option');
+    opts.forEach(o => o.style.pointerEvents = 'none');
+    if (isCorrect) {
+      el.classList.add('correct');
+      correctCount++;
+      document.getElementById(qid+'-fb').style.display = 'block';
+    } else {
+      el.classList.add('wrong');
+      document.getElementById(qid+'-wfb').style.display = 'block';
+      opts.forEach(o => {
+        if (o.getAttribute('onclick') && o.getAttribute('onclick').includes('true')) o.classList.add('correct');
+      });
+    }
+    document.getElementById('score').textContent = correctCount + ' / 5';
+  }
+
+  function resetQuiz() {
+    answered = {q1:false,q2:false,q3:false,q4:false,q5:false};
+    correctCount = 0;
+    document.getElementById('score').textContent = '0 / 5';
+    document.querySelectorAll('.option').forEach(o => {
+      o.classList.remove('correct','wrong');
+      o.style.pointerEvents = '';
+    });
+    document.querySelectorAll('.feedback').forEach(f => f.style.display = 'none');
+  }
+</script>
+</body>
+</html>
