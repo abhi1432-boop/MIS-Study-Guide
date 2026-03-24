@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chapter 1 — Tech's Impact, Entrepreneurship & the Hype Cycle</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0d0f1a; --surface: #13162a; --border: #1e2340;
+      --accent: #e8b84b; --accent2: #5b8dee; --text: #e8eaf0;
+      --muted: #7a7f9a; --green: #4cbb8a; --red: #e05c6a;
+    }
+    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background-image: linear-gradient(rgba(91,141,238,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(91,141,238,0.03) 1px, transparent 1px);
+      background-size: 60px 60px; pointer-events: none; z-index: 0;
+    }
+    .wrapper { position: relative; z-index: 1; max-width: 820px; margin: 0 auto; padding: 48px 24px 80px; }
+
+    .back { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); text-decoration: none; font-size: 0.85rem; margin-bottom: 40px; transition: color 0.2s; }
+    .back:hover { color: var(--accent); }
+    .back::before { content: '←'; }
+
+    .ch-label { font-size: 11px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); }
+    h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; margin: 10px 0 6px; line-height: 1.15; }
+    .ch-subtitle { color: var(--muted); font-size: 0.95rem; font-weight: 300; }
+    .divider { width: 50px; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); margin: 24px 0; }
+
+    .section { margin-top: 52px; }
+    .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+    .section-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+    .icon-vocab { background: rgba(232,184,75,0.12); }
+    .icon-concepts { background: rgba(91,141,238,0.12); }
+    .icon-quiz { background: rgba(76,187,138,0.12); }
+    .section-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; }
+
+    .vocab-list { display: flex; flex-direction: column; gap: 12px; }
+    .vocab-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; }
+    .vocab-term { font-weight: 500; font-size: 1rem; color: var(--accent); margin-bottom: 6px; }
+    .vocab-def { font-size: 0.9rem; color: var(--text); line-height: 1.65; }
+    .vocab-cite { font-size: 0.78rem; color: var(--muted); margin-top: 8px; font-style: italic; }
+    .analogy-box { margin-top: 10px; background: rgba(232,184,75,0.06); border-left: 2px solid rgba(232,184,75,0.4); padding: 8px 12px; border-radius: 0 6px 6px 0; font-size: 0.83rem; color: var(--accent); line-height: 1.5; }
+
+    .concept-list { display: flex; flex-direction: column; gap: 12px; }
+    .concept-card { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent2); border-radius: 0 12px 12px 0; padding: 18px 20px; }
+    .concept-title { font-weight: 500; color: var(--accent2); font-size: 0.95rem; margin-bottom: 8px; }
+    .concept-body { font-size: 0.9rem; line-height: 1.7; color: var(--text); }
+    .concept-body b { color: var(--accent); font-weight: 500; }
+
+    /* Hype cycle visual */
+    .hype-stages { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+    .hype-stage { display: flex; align-items: flex-start; gap: 12px; padding: 11px 14px; border-radius: 8px; }
+    .hs1 { background: rgba(91,141,238,0.08); border: 1px solid rgba(91,141,238,0.2); }
+    .hs2 { background: rgba(232,184,75,0.08); border: 1px solid rgba(232,184,75,0.2); }
+    .hs3 { background: rgba(224,92,106,0.08); border: 1px solid rgba(224,92,106,0.2); }
+    .hs4 { background: rgba(76,187,138,0.08); border: 1px solid rgba(76,187,138,0.2); }
+    .hs5 { background: rgba(91,141,238,0.05); border: 1px solid rgba(91,141,238,0.1); }
+    .hs-num { min-width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; color: #fff; }
+    .hs1 .hs-num { background: #5b8dee; }
+    .hs2 .hs-num { background: #e8b84b; }
+    .hs3 .hs-num { background: #e05c6a; }
+    .hs4 .hs-num { background: #4cbb8a; }
+    .hs5 .hs-num { background: #5b8dee; opacity: 0.6; }
+    .hs-content { font-size: 0.88rem; line-height: 1.55; }
+    .hs-name { font-weight: 600; }
+
+    /* two col */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+    @media(max-width:520px){ .two-col { grid-template-columns: 1fr; } }
+    .pro-tile { background: rgba(76,187,138,0.07); border: 1px solid rgba(76,187,138,0.18); border-radius: 8px; padding: 12px 14px; }
+    .con-tile { background: rgba(224,92,106,0.07); border: 1px solid rgba(224,92,106,0.18); border-radius: 8px; padding: 12px 14px; }
+    .tile-head { font-size: 0.82rem; font-weight: 600; margin-bottom: 6px; }
+    .pro-tile .tile-head { color: var(--green); }
+    .con-tile .tile-head { color: var(--red); }
+    .tile-body { font-size: 0.8rem; color: var(--muted); line-height: 1.55; }
+
+    .quiz-container { display: flex; flex-direction: column; gap: 28px; }
+    .quiz-q { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px 24px 20px; }
+    .q-number { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); margin-bottom: 10px; }
+    .q-text { font-size: 1rem; font-weight: 500; line-height: 1.55; margin-bottom: 18px; }
+    .options { display: flex; flex-direction: column; gap: 8px; }
+    .option { display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 0.88rem; line-height: 1.5; transition: border-color 0.2s, background 0.2s; user-select: none; }
+    .option:hover { border-color: var(--accent2); background: rgba(91,141,238,0.06); }
+    .option.correct { border-color: var(--green) !important; background: rgba(76,187,138,0.1) !important; }
+    .option.wrong   { border-color: var(--red)   !important; background: rgba(224,92,106,0.08) !important; }
+    .opt-letter { min-width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; flex-shrink: 0; margin-top: 1px; }
+    .option.correct .opt-letter { background: var(--green); border-color: var(--green); color: #fff; }
+    .option.wrong   .opt-letter { background: var(--red);   border-color: var(--red);   color: #fff; }
+    .feedback { margin-top: 12px; font-size: 0.83rem; color: var(--green); display: none; line-height: 1.55; padding: 10px 12px; background: rgba(76,187,138,0.06); border-radius: 8px; }
+    .feedback.wrong-fb { color: #f09a6a; background: rgba(224,92,106,0.06); }
+
+    .score-bar { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    .score-text { font-size: 0.95rem; color: var(--muted); }
+    .score-num  { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; color: var(--accent); }
+    .reset-btn  { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 8px 18px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-family: 'DM Sans', sans-serif; transition: border-color 0.2s, color 0.2s; }
+    .reset-btn:hover { border-color: var(--accent); color: var(--accent); }
+    footer { text-align: center; margin-top: 64px; color: var(--muted); font-size: 0.8rem; }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+  <a href="index.html" class="back">Back to all chapters</a>
+
+  <div class="ch-label">Chapter 01</div>
+  <h1>Tech, Entrepreneurship & the Hype Cycle</h1>
+  <p class="ch-subtitle">Why technology reshapes every business, why young people build empires, and how to cut through the hype</p>
+  <div class="divider"></div>
+
+  <!-- VOCAB -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-vocab">📖</div>
+      <div class="section-title">Vocabulary</div>
+    </div>
+    <div class="vocab-list">
+
+      <div class="vocab-card">
+        <div class="vocab-term">Market Capitalization (Market Cap)</div>
+        <div class="vocab-def">The total market value of a publicly traded company — calculated by multiplying shares outstanding by current share price. Only six firms have ever crossed $1 trillion in market cap, and all are tech companies: Apple, Microsoft, Alphabet, Meta, Amazon, and Nvidia.</div>
+        <div class="analogy-box">🧠 Analogy: Market cap is what the stock market thinks a company is worth today — not what was paid to build it, but what someone would pay to own all of it right now.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 1</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Platform (vs. Product)</div>
+        <div class="vocab-def">A platform enables others to build complementary goods and services on top of it — creating an ecosystem of value beyond what the platform owner alone could produce. A product is standalone with fixed features. Apple's biggest strategic insight: build iOS + the App Store (platform), not just a phone (product). Result: 2+ million third-party apps that Apple never had to build itself.</div>
+        <div class="analogy-box">🧠 Analogy: A product is one store. A platform is the mall — it hosts dozens of stores and becomes far more valuable than any single one of them.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 1</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Network Effects</div>
+        <div class="vocab-def">A product or service becomes more valuable as more people use it. Meta has 3.6 billion monthly users — every new user makes the platform more useful for everyone else. Network effects create winner-take-all dynamics: once a platform gets big enough, it's nearly impossible for competitors to catch up because the gap widens automatically.</div>
+        <div class="analogy-box">🧠 Analogy: A phone is worthless if you're the only person who has one. The more people get phones, the more valuable your phone becomes. That automatic compounding is a network effect.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 1</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Disruptive Technology</div>
+        <div class="vocab-def">Technology that fundamentally transforms an industry — often displacing established firms and creating entirely new markets. Disruption almost always arrives from outside the existing industry. Uber disrupted taxis without owning vehicles. Airbnb disrupted hotels without owning properties. The incumbent rarely disrupts itself.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 1</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Hype Cycle</div>
+        <div class="vocab-def">A framework created by Gartner that tracks how market expectations for a technology change over time — rising sharply on early promise, peaking with inflated hype, crashing into disillusionment, then slowly recovering as real use cases emerge. It is not a scientific measurement — there are no quantifiable metrics on either axis. It's a tool for helping managers roughly assess where a technology is in its maturity and whether the timing is right to invest.</div>
+        <div class="analogy-box">🧠 Analogy: The Hype Cycle is like tracking public excitement about a new diet — explosive enthusiasm at launch, backlash when it doesn't work for everyone, then quiet mainstream adoption by people who actually make it work.</div>
+        <div class="vocab-cite">Source: Gartner; Gallaugher, Ch. 1</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Trough of Disillusionment</div>
+        <div class="vocab-def">Stage 3 of the Hype Cycle — the period when a technology's initial hype has faded, early implementations have underperformed expectations, investment dries up, and media coverage turns negative. Some technologies die in the trough (the Metaverse, NFTs). Others survive it, mature, and eventually reach mainstream adoption. Knowing whether a technology is in the trough vs. dead requires judgment — not just reading headlines.</div>
+        <div class="vocab-cite">Source: Gartner; Gallaugher, Ch. 1</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Startup Accelerator</div>
+        <div class="vocab-def">A competitive, time-limited program (typically 3 months) that provides early-stage startups with mentorship, resources, and a small amount of seed funding in exchange for a small equity stake. Programs culminate in a "Demo Day" where startups pitch to investors. The most elite is Y-Combinator (YC), whose alumni include Airbnb, Reddit, Stripe, and Dropbox. Not all accelerators are equal — quality of mentors and investor networks varies enormously.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 1</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Pivot</div>
+        <div class="vocab-def">In entrepreneurship, a significant redefinition of a startup's market, business model, or product offering in response to real-world feedback. Pivoting is normal and expected — most successful companies look very different from what their founders originally envisioned. The key is getting customer feedback early and often so that pivots happen before resources are exhausted, not after.</div>
+        <div class="analogy-box">🧠 Analogy: You open a pizza shop, but customers keep asking if you can cater events. You pivot to a catering business. Same cooking skills, completely different business model — triggered by what customers actually wanted.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 1</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- KEY CONCEPTS -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-concepts">💡</div>
+      <div class="section-title">Key Concepts</div>
+    </div>
+    <div class="concept-list">
+
+      <div class="concept-card">
+        <div class="concept-title">Tech Is Built by Young People — and the Barriers Keep Falling</div>
+        <div class="concept-body">The chapter opens with a striking pattern: nearly every transformative tech firm was founded by someone in their twenties or younger.<br><br>
+        Bill Gates — left college to found Microsoft. Michael Dell — started building PCs in his UT dorm room as a sophomore. Zuckerberg — founded Facebook at 19. Steve Jobs — founded Apple at 21. Sergey Brin and Larry Page — PhD students at Stanford when they started Google. Kevin Systrom — sold Instagram to Facebook for $1B with a 13-person team 18 months after founding it. Palmer Luckey — founded Oculus as a teenager, sold it to Facebook for $2B before the first product shipped.<br><br>
+        <b>Why now is the best time in history to start a startup:</b><br>
+        • <b>Cloud computing</b> — rent computing power instead of buying servers (startup cost fell from $5M in 2000 to $5,000 in 2011)<br>
+        • <b>App stores</b> — instant distribution to hundreds of millions of people at near-zero cost<br>
+        • <b>Social media</b> — viral awareness without traditional advertising spend<br>
+        • <b>Crowdfunding</b> — Oculus raised $2.4M on Kickstarter without giving up equity<br>
+        • <b>AI tools</b> — generative AI lets small teams build and ship faster than ever<br><br>
+        The most important advice: <b>start building product</b>. Pitch decks, logos, and business plans are signs of a "wantrepreneur." Real entrepreneurs get customer feedback on real products.</div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-title">The Five Stages of the Hype Cycle</div>
+        <div class="concept-body">Every manager needs to understand this framework. It explains why technologies that seem dead sometimes come back, and why jumping on hype can be just as dangerous as moving too slowly.
+        <div class="hype-stages">
+          <div class="hype-stage hs1">
+            <div class="hs-num">1</div>
+            <div class="hs-content"><span class="hs-name">Innovation Trigger</span> — A new technology emerges. Early proofs-of-concept generate excitement. VCs start funding startups in the space. Expectations begin rising sharply.</div>
+          </div>
+          <div class="hype-stage hs2">
+            <div class="hs-num">2</div>
+            <div class="hs-content"><span class="hs-name">Peak of Inflated Expectations</span> — Media hype hits maximum. Everyone is talking about it. But there's very little real ROI yet. The gap between promise and reality is widest here. <i>Example: ChatGPT in 2023, the Metaverse in 2021, crypto in 2017.</i></div>
+          </div>
+          <div class="hype-stage hs3">
+            <div class="hs-num">3</div>
+            <div class="hs-content"><span class="hs-name">Trough of Disillusionment</span> — Reality sets in. Early implementations underperform. Coverage turns negative. Investment dries up. Some technologies die here permanently. <i>Example: NFTs, Google Glass, early VR.</i></div>
+          </div>
+          <div class="hype-stage hs4">
+            <div class="hs-num">4</div>
+            <div class="hs-content"><span class="hs-name">Slope of Enlightenment</span> — Firms figure out the real use cases that actually work. ROI is demonstrated. Adoption grows steadily among those who understand the tech properly.</div>
+          </div>
+          <div class="hype-stage hs5">
+            <div class="hs-num">5</div>
+            <div class="hs-content"><span class="hs-name">Plateau of Productivity</span> — Technology becomes mainstream. Benefits are widely understood. The hype is gone — it's just a normal tool now. <i>Example: cloud computing, smartphones, e-commerce.</i></div>
+          </div>
+        </div>
+        <br><b>Critical caveat:</b> The Hype Cycle has no actual measurements. There are no numbers on either axis. It's a qualitative judgment tool, not a scientific measurement. Use it as one input among many — not as a definitive map.</div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-title">Moving Early vs. Moving Late — The Timing Trap</div>
+        <div class="concept-body">The Hype Cycle is really about timing — and there are dangers on both ends:<br><br>
+        <b>Moving too early:</b> You burn cash on technology that isn't ready or gets overtaken by something better. IBM invested billions in Watson AI and built entire business divisions around it. Meanwhile, Google's Transformer invention (the "T" in ChatGPT) enabled a new generation of AI that left Watson looking obsolete. IBM doesn't rank in the top three cloud computing firms today — despite coining the term "Utility Computing" years before AWS existed.<br><br>
+        <b>Moving too late:</b> You miss the window to establish network effects, switching costs, and scale that early movers lock in. The firms that hesitate while a competitor establishes a platform often find they can never catch up — the gap widens automatically through network effects.<br><br>
+        <b>The pattern that repeats:</b> Xerox invented the graphical user interface — Apple commercialized it, Microsoft won the market. Palm and BlackBerry led smartphones — Apple crushed them. IBM led cloud computing in concept — Amazon became the market leader. <b>Inventing something and winning the market are completely different things.</b></div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-title">AI: Promise and Peril — Know Both</div>
+        <div class="concept-body">
+        <div class="two-col">
+          <div class="pro-tile">
+            <div class="tile-head">✅ Real Benefits</div>
+            <div class="tile-body">• Accelerated COVID vaccine development — saved millions of lives<br>• Lawyers automating tedious case research<br>• Accountants eliminating grunt work<br>• Earlier and more accurate disease diagnosis<br>• Empowering programmers to build faster<br>• Delivering medical supplies to remote areas (Zipline drones)</div>
+          </div>
+          <div class="con-tile">
+            <div class="tile-head">⚠️ Real Risks</div>
+            <div class="tile-body">• Hallucination — AI confidently fabricates false information<br>• Biased systems causing harm to women and minorities<br>• Copyright violations — trained on creators' work without consent<br>• Security holes from unvetted consumer AI in enterprises<br>• Enabling scammers and bad actors at scale<br>• Massive energy consumption (Ireland data centers = 18% of national electricity)</div>
+          </div>
+        </div>
+        </div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-title">Startup Advice the Textbook Actually Gives</div>
+        <div class="concept-body">These are directly testable because the textbook is unusually specific:<br><br>
+        <b>Do:</b><br>
+        • Start building real product immediately — a working prototype beats a pitch deck every time<br>
+        • Get customer feedback early and iterate — most pivots happen because of what customers tell you<br>
+        • Attend startup events, hackathons, and TechTreks — find cofounders and mentors<br>
+        • Develop tech skills — even non-technical founders should understand code logic<br>
+        • Use the "golden triad": (1) there's a problem, (2) I can solve it, (3) I can be paid for solving it<br><br>
+        <b>Don't:</b><br>
+        • Spend time on pitch decks, logos, or business plans early on — classic "wantrepreneur" behavior<br>
+        • Ask investors to sign NDAs — no serious investor will, and asking signals inexperience<br>
+        • Take money from "dumb money" investors — those without experience, connections, or a track record of helping founders succeed<br>
+        • Assume your idea is unique — winning is about execution and customer fit, not secrecy</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-quiz">🎯</div>
+      <div class="section-title">Practice Quiz</div>
+    </div>
+
+    <div class="score-bar" style="margin-bottom:24px;">
+      <div>
+        <div class="score-text">Your score</div>
+        <div class="score-num" id="score">0 / 5</div>
+      </div>
+      <button class="reset-btn" onclick="resetQuiz()">Reset Quiz</button>
+    </div>
+
+    <div class="quiz-container">
+
+      <!-- Q1 — correct answer is SHORT (B) -->
+      <div class="quiz-q" id="q1">
+        <div class="q-number">Question 1</div>
+        <div class="q-text">A technology has just received massive media coverage, every VC is funding startups in the space, and executives are announcing major initiatives — but no one has actually demonstrated meaningful return on investment yet. Where is this technology on the Hype Cycle?</div>
+        <div class="options">
+          <div class="option" onclick="answer(this,'q1',false)"><div class="opt-letter">A</div> Slope of Enlightenment — firms are starting to identify use cases that generate real ROI after a period of experimentation.</div>
+          <div class="option" onclick="answer(this,'q1',true)"><div class="opt-letter">B</div> Peak of Inflated Expectations.</div>
+          <div class="option" onclick="answer(this,'q1',false)"><div class="opt-letter">C</div> Plateau of Productivity — the technology has matured and is now being widely adopted across industries.</div>
+          <div class="option" onclick="answer(this,'q1',false)"><div class="opt-letter">D</div> Trough of Disillusionment — investment is drying up because early implementations underperformed.</div>
+        </div>
+        <div class="feedback" id="q1-fb">✓ Correct! Maximum media hype + massive VC investment + zero proven ROI = Peak of Inflated Expectations. This is exactly where the Metaverse was in 2021 and where crypto was in 2017. The danger zone for managers: this is when pressure to invest is highest, but the chance of wasting money is also highest.</div>
+        <div class="feedback wrong-fb" id="q1-wfb">✗ Not quite. The Slope of Enlightenment comes after the trough — when ROI has been demonstrated. The Plateau is mainstream adoption. The Trough is characterized by negative coverage and dying investment. Maximum hype + zero ROI = Peak of Inflated Expectations.</div>
+      </div>
+
+      <!-- Q2 — correct answer is B, medium length -->
+      <div class="quiz-q" id="q2">
+        <div class="q-number">Question 2</div>
+        <div class="q-text">Palmer Luckey founded Oculus as a teenager and sold it to Facebook for $2 billion before his company had shipped a single consumer product. Rather than raising money from venture capitalists, he initially funded the effort through Kickstarter — raising $2.4 million against a $250,000 goal. What does this primarily illustrate about modern entrepreneurship?</div>
+        <div class="options">
+          <div class="option" onclick="answer(this,'q2',false)"><div class="opt-letter">A</div> That venture capital is no longer relevant for hardware startups.</div>
+          <div class="option" onclick="answer(this,'q2',true)"><div class="opt-letter">B</div> Crowdfunding lets founders validate demand and raise capital without giving up equity to investors.</div>
+          <div class="option" onclick="answer(this,'q2',false)"><div class="opt-letter">C</div> That Facebook overpaid for early-stage hardware companies during the 2010s because of competitive pressure from Google's acquisition of Motorola and other hardware firms, creating artificially inflated valuations for AR/VR startups regardless of their commercial readiness.</div>
+          <div class="option" onclick="answer(this,'q2',false)"><div class="opt-letter">D</div> That hardware companies are always better investments than software companies because they have physical products.</div>
+        </div>
+        <div class="feedback" id="q2-fb">✓ Correct! The textbook uses Luckey's Kickstarter specifically to illustrate how crowdfunding changed startup financing — founders can now raise significant capital from customers who want the product, without handing equity to VCs who would demand ownership. Luckey got $2.4M while keeping 100% of his company's equity intact.</div>
+        <div class="feedback wrong-fb" id="q2-wfb">✗ Not quite. The specific lesson from the Oculus example is about crowdfunding — using platforms like Kickstarter to raise money directly from interested customers without diluting equity. The textbook mentions this as one of the forces that has lowered the cost of entrepreneurship and made it more accessible to young founders.</div>
+      </div>
+
+      <!-- Q3 — correct answer is A, short -->
+      <div class="quiz-q" id="q3">
+        <div class="q-number">Question 3</div>
+        <div class="q-text">IBM coined the term "Utility Computing" years before Amazon launched AWS. IBM had a century-long head start, massive resources, and early conceptual leadership in cloud computing. Yet today IBM doesn't rank in the top three cloud providers. What does this best illustrate?</div>
+        <div class="options">
+          <div class="option" onclick="answer(this,'q3',true)"><div class="opt-letter">A</div> Inventing a concept and winning the market are completely different things.</div>
+          <div class="option" onclick="answer(this,'q3',false)"><div class="opt-letter">B</div> IBM's failure proves that large established firms can never successfully compete in cloud computing against pure-play startups, because organizational bureaucracy and legacy revenue streams make pivoting structurally impossible for firms with over $50 billion in annual revenue.</div>
+          <div class="option" onclick="answer(this,'q3',false)"><div class="opt-letter">C</div> IBM's Utility Computing effort was simply too expensive for customers compared to Amazon's pricing strategy.</div>
+          <div class="option" onclick="answer(this,'q3',false)"><div class="opt-letter">D</div> Cloud computing is not a good business for hardware-focused companies like IBM.</div>
+        </div>
+        <div class="feedback" id="q3-fb">✓ Correct! This is the chapter's recurring pattern: the inventor of a technology rarely wins the market. Xerox invented the GUI — Apple and Microsoft won. Palm and BlackBerry led smartphones — Apple crushed them. IBM led cloud computing in concept — Amazon dominates it. First-mover advantage is real, but only if you execute. Conceptual leadership without execution is worth nothing.</div>
+        <div class="feedback wrong-fb" id="q3-wfb">✗ Not quite. The textbook's point is simpler and more universal — inventing something and winning the market are two different things. This pattern repeats constantly in tech history and isn't specific to IBM or to large companies vs. startups.</div>
+      </div>
+
+      <!-- Q4 — correct answer is C -->
+      <div class="quiz-q" id="q4">
+        <div class="q-number">Question 4</div>
+        <div class="q-text">A first-time founder has an app idea. She spends three months designing a logo, building a 40-slide pitch deck, writing a 30-page business plan, and asking every potential investor she meets to sign an NDA before she'll share details. According to the textbook, what is the core problem with this approach?</div>
+        <div class="options">
+          <div class="option" onclick="answer(this,'q4',false)"><div class="opt-letter">A</div> She should have filed a patent first to protect her intellectual property before sharing anything.</div>
+          <div class="option" onclick="answer(this,'q4',false)"><div class="opt-letter">B</div> Her pitch deck is too long — investors prefer decks under 12 slides.</div>
+          <div class="option" onclick="answer(this,'q4',true)"><div class="opt-letter">C</div> She's acting like a "wantrepreneur" — spending time on presentations and secrecy instead of building a real product and getting customer feedback. No serious investor signs NDAs, and asking them to do so signals inexperience.</div>
+          <div class="option" onclick="answer(this,'q4',false)"><div class="opt-letter">D</div> Business plans are outdated — she should be using the Lean Canvas framework instead.</div>
+        </div>
+        <div class="feedback" id="q4-fb">✓ Correct! The textbook is blunt: spending time on pitch decks, logos, and business plans early is a classic "wantrepreneur" pattern. Real entrepreneurship is about building product and getting customer feedback. And asking investors to sign NDAs is a red flag — no reputable venture investor will sign one, and making the request signals that the founder is dangerously uninformed about how the industry works.</div>
+        <div class="feedback wrong-fb" id="q4-wfb">✗ Not quite. The textbook's concern isn't about deck length or patent timing — it's that she's doing all the wrong things. Building product and getting customer feedback is what matters early on. Logos, decks, and business plans are distractions. And NDA requests will get her dismissed by every serious investor she meets.</div>
+      </div>
+
+      <!-- Q5 — correct answer is D, short -->
+      <div class="quiz-q" id="q5">
+        <div class="q-number">Question 5</div>
+        <div class="q-text">The Hype Cycle is described by Gartner as having "Expectations" on the Y-axis and "Time" on the X-axis. A student says: "Since the Y-axis measures expectations, I can use this chart to precisely calculate when a technology will reach mainstream adoption." What's wrong with this?</div>
+        <div class="options">
+          <div class="option" onclick="answer(this,'q5',false)"><div class="opt-letter">A</div> The Y-axis should measure ROI, not expectations — the student has misread the chart's axes.</div>
+          <div class="option" onclick="answer(this,'q5',false)"><div class="opt-letter">B</div> The Hype Cycle only applies to consumer technologies, not enterprise software, so the student is using the wrong framework for their use case.</div>
+          <div class="option" onclick="answer(this,'q5',false)"><div class="opt-letter">C</div> The student needs Gartner's paid subscription service to access the precise metrics behind the chart that are hidden from public view in the standard visualization.</div>
+          <div class="option" onclick="answer(this,'q5',true)"><div class="opt-letter">D</div> Neither axis has actual measurements — the chart is a qualitative judgment tool, not a scientific graph. You cannot calculate anything from it precisely.</div>
+        </div>
+        <div class="feedback" id="q5-fb">✓ Correct! The textbook is explicit: there are no metrics on either axis. "Expectations" isn't a number you can measure, and "Time" has no scale. The Hype Cycle is a rough qualitative assessment — a useful thinking tool, but not a scientific instrument. Treating it as precise would give false confidence in decisions that require genuine judgment about technology and markets.</div>
+        <div class="feedback wrong-fb" id="q5-wfb">✗ Not quite. The Hype Cycle's fundamental limitation — stated clearly in the textbook — is that neither axis is actually quantifiable. There are no hidden metrics, no paid tier with more precise data. The chart is intentionally qualitative. It's a framework for structured thinking, not a prediction engine.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer><p>Chapter 1 · Tech, Entrepreneurship & the Hype Cycle · Study Guide</p></footer>
+</div>
+
+<script>
+  let answered = {q1:false,q2:false,q3:false,q4:false,q5:false};
+  let correctCount = 0;
+
+  function answer(el, qid, isCorrect) {
+    if (answered[qid]) return;
+    answered[qid] = true;
+    const opts = el.closest('.options').querySelectorAll('.option');
+    opts.forEach(o => o.style.pointerEvents = 'none');
+    if (isCorrect) {
+      el.classList.add('correct');
+      correctCount++;
+      document.getElementById(qid+'-fb').style.display = 'block';
+    } else {
+      el.classList.add('wrong');
+      document.getElementById(qid+'-wfb').style.display = 'block';
+      opts.forEach(o => {
+        if (o.getAttribute('onclick') && o.getAttribute('onclick').includes('true')) o.classList.add('correct');
+      });
+    }
+    document.getElementById('score').textContent = correctCount + ' / 5';
+  }
+
+  function resetQuiz() {
+    answered = {q1:false,q2:false,q3:false,q4:false,q5:false};
+    correctCount = 0;
+    document.getElementById('score').textContent = '0 / 5';
+    document.querySelectorAll('.option').forEach(o => {
+      o.classList.remove('correct','wrong');
+      o.style.pointerEvents = '';
+    });
+    document.querySelectorAll('.feedback').forEach(f => f.style.display = 'none');
+  }
+</script>
+</body>
+</html>
