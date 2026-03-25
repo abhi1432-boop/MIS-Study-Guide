@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chapter 2 — Strategy & Competitive Advantage</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0d0f1a; --surface: #13162a; --border: #1e2340;
+      --accent: #e8b84b; --accent2: #5b8dee; --text: #e8eaf0;
+      --muted: #7a7f9a; --green: #4cbb8a; --red: #e05c6a;
+    }
+    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background-image: linear-gradient(rgba(91,141,238,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(91,141,238,0.03) 1px, transparent 1px);
+      background-size: 60px 60px; pointer-events: none; z-index: 0;
+    }
+    .wrapper { position: relative; z-index: 1; max-width: 820px; margin: 0 auto; padding: 48px 24px 80px; }
+
+    .back { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); text-decoration: none; font-size: 0.85rem; margin-bottom: 40px; transition: color 0.2s; }
+    .back:hover { color: var(--accent); }
+    .back::before { content: '←'; }
+
+    .ch-label { font-size: 11px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); }
+    h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; margin: 10px 0 6px; line-height: 1.15; }
+    .ch-subtitle { color: var(--muted); font-size: 0.95rem; font-weight: 300; }
+    .divider { width: 50px; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); margin: 24px 0; }
+
+    .section { margin-top: 52px; }
+    .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+    .section-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+    .icon-vocab { background: rgba(232,184,75,0.12); }
+    .icon-concepts { background: rgba(91,141,238,0.12); }
+    .icon-quiz { background: rgba(76,187,138,0.12); }
+    .section-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; }
+
+    .vocab-list { display: flex; flex-direction: column; gap: 12px; }
+    .vocab-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; }
+    .vocab-term { font-weight: 500; font-size: 1rem; color: var(--accent); margin-bottom: 6px; }
+    .vocab-def { font-size: 0.9rem; color: var(--text); line-height: 1.65; }
+    .vocab-cite { font-size: 0.78rem; color: var(--muted); margin-top: 8px; font-style: italic; }
+    .analogy-box { margin-top: 10px; background: rgba(232,184,75,0.06); border-left: 2px solid rgba(232,184,75,0.4); padding: 8px 12px; border-radius: 0 6px 6px 0; font-size: 0.83rem; color: var(--accent); line-height: 1.5; }
+
+    .concept-list { display: flex; flex-direction: column; gap: 12px; }
+    .concept-card { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent2); border-radius: 0 12px 12px 0; padding: 18px 20px; }
+    .concept-title { font-weight: 500; color: var(--accent2); font-size: 0.95rem; margin-bottom: 8px; }
+    .concept-body { font-size: 0.9rem; line-height: 1.7; color: var(--text); }
+    .concept-body b { color: var(--accent); font-weight: 500; }
+
+    /* Five forces diagram */
+    .five-forces { display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: auto auto auto; gap: 8px; margin-top: 14px; }
+    .ff-center { grid-column: 2; grid-row: 2; background: rgba(232,184,75,0.12); border: 1px solid rgba(232,184,75,0.3); border-radius: 10px; padding: 12px; text-align: center; }
+    .ff-top    { grid-column: 2; grid-row: 1; }
+    .ff-bottom { grid-column: 2; grid-row: 3; }
+    .ff-left   { grid-column: 1; grid-row: 2; }
+    .ff-right  { grid-column: 3; grid-row: 2; }
+    .ff-tile   { background: rgba(91,141,238,0.08); border: 1px solid rgba(91,141,238,0.18); border-radius: 10px; padding: 11px 12px; text-align: center; }
+    .ff-name   { font-size: 0.8rem; font-weight: 600; color: var(--accent2); margin-bottom: 3px; }
+    .ff-center .ff-name { color: var(--accent); }
+    .ff-desc   { font-size: 0.75rem; color: var(--muted); line-height: 1.4; }
+
+    /* VRIN grid */
+    .vrin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+    .vrin-tile { border-radius: 10px; padding: 14px 16px; }
+    .v-tile { background: rgba(76,187,138,0.07); border: 1px solid rgba(76,187,138,0.2); }
+    .r-tile { background: rgba(91,141,238,0.07); border: 1px solid rgba(91,141,238,0.2); }
+    .i-tile { background: rgba(232,184,75,0.07); border: 1px solid rgba(232,184,75,0.2); }
+    .n-tile { background: rgba(224,92,106,0.07); border: 1px solid rgba(224,92,106,0.2); }
+    .vrin-letter { font-size: 1.5rem; font-weight: 900; font-family: 'Playfair Display', serif; margin-bottom: 4px; }
+    .v-tile .vrin-letter { color: var(--green); }
+    .r-tile .vrin-letter { color: var(--accent2); }
+    .i-tile .vrin-letter { color: var(--accent); }
+    .n-tile .vrin-letter { color: var(--red); }
+    .vrin-word { font-size: 0.82rem; font-weight: 600; margin-bottom: 6px; }
+    .vrin-body { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+
+    /* Assets grid */
+    .assets-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 10px; margin-top: 12px; }
+    .asset-tile { background: rgba(91,141,238,0.07); border: 1px solid rgba(91,141,238,0.18); border-radius: 8px; padding: 12px 14px; }
+    .asset-name { font-size: 0.85rem; font-weight: 600; color: var(--accent2); margin-bottom: 4px; }
+    .asset-body { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+
+    .quiz-container { display: flex; flex-direction: column; gap: 28px; }
+    .quiz-q { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px 24px 20px; }
+    .q-number { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); margin-bottom: 10px; }
+    .q-text { font-size: 1rem; font-weight: 500; line-height: 1.55; margin-bottom: 18px; }
+    .options { display: flex; flex-direction: column; gap: 8px; }
+    .option { display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 0.88rem; line-height: 1.5; transition: border-color 0.2s, background 0.2s; user-select: none; }
+    .option:hover { border-color: var(--accent2); background: rgba(91,141,238,0.06); }
+    .option.correct { border-color: var(--green) !important; background: rgba(76,187,138,0.1) !important; }
+    .option.wrong   { border-color: var(--red)   !important; background: rgba(224,92,106,0.08) !important; }
+    .opt-letter { min-width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; flex-shrink: 0; margin-top: 1px; }
+    .option.correct .opt-letter { background: var(--green); border-color: var(--green); color: #fff; }
+    .option.wrong   .opt-letter { background: var(--red);   border-color: var(--red);   color: #fff; }
+    .feedback { margin-top: 12px; font-size: 0.83rem; color: var(--green); display: none; line-height: 1.55; padding: 10px 12px; background: rgba(76,187,138,0.06); border-radius: 8px; }
+    .feedback.wrong-fb { color: #f09a6a; background: rgba(224,92,106,0.06); }
+
+    .score-bar { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    .score-text { font-size: 0.95rem; color: var(--muted); }
+    .score-num  { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; color: var(--accent); }
+    .reset-btn  { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 8px 18px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-family: 'DM Sans', sans-serif; transition: border-color 0.2s, color 0.2s; }
+    .reset-btn:hover { border-color: var(--accent); color: var(--accent); }
+    footer { text-align: center; margin-top: 64px; color: var(--muted); font-size: 0.8rem; }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+  <a href="index.html" class="back">Back to all chapters</a>
+
+  <div class="ch-label">Chapter 02</div>
+  <h1>Strategy & Competitive Advantage</h1>
+  <p class="ch-subtitle">How firms win sustainably — and why technology alone is never enough</p>
+  <div class="divider"></div>
+
+  <!-- VOCAB -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-vocab">📖</div>
+      <div class="section-title">Vocabulary</div>
+    </div>
+    <div class="vocab-list">
+
+      <div class="vocab-card">
+        <div class="vocab-term">Sustainable Competitive Advantage</div>
+        <div class="vocab-def">Financial performance that consistently outperforms industry averages over time — not just a temporary win. True sustainable advantage is extremely difficult to achieve because competitors constantly copy, undercut, and innovate. Technology alone almost never creates sustainable advantage because it can be purchased, copied, or reverse-engineered by rivals.</div>
+        <div class="analogy-box">🧠 Analogy: Winning one race is an advantage. Being the fastest runner every season for a decade is a sustainable competitive advantage. The first can be luck or a borrowed bike. The second requires something others can't easily replicate.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 2; Porter, Harvard Business School</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Operational Effectiveness</div>
+        <div class="vocab-def">Performing the same tasks better than rivals — faster, cheaper, or with higher quality. The danger: when everyone does the same things well, offerings become commodities and competition collapses into price wars that erode profits for all players. Operational effectiveness is necessary but almost never sufficient for sustainable advantage. TiVo built a great DVR — so did every cable company. The technology advantage evaporated.</div>
+        <div class="analogy-box">🧠 Analogy: Every restaurant in a food court uses high-quality ingredients. That's operational effectiveness. But if all the food tastes the same, customers just pick whoever is cheapest. Nobody wins.</div>
+        <div class="vocab-cite">Source: Porter; Gallaugher, Ch. 2</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Strategic Positioning</div>
+        <div class="vocab-def">Performing different activities from rivals, or performing the same activities in a fundamentally different way — creating distinctions that are hard to copy. As Porter puts it, strategy is "fundamentally about being different." Amazon doesn't just sell books more efficiently than Barnes & Noble — it built an entirely different model: unlimited inventory, data-driven recommendations, and customer reviews that no physical store could replicate.</div>
+        <div class="analogy-box">🧠 Analogy: Every taxi company picks up passengers. Uber's strategic positioning wasn't just doing it faster — it eliminated the medallion system, used your own car, and built dynamic pricing. That's a different activity, not just a better version of the same one.</div>
+        <div class="vocab-cite">Source: Porter; Gallaugher, Ch. 2</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Resource-Based View (VRIN)</div>
+        <div class="vocab-def">A framework for evaluating whether a firm's resources can yield sustainable competitive advantage. Resources must satisfy all four criteria — <b>V</b>aluable, <b>R</b>are, <b>I</b>mperfectly imitable (hard to copy), and <b>N</b>onsubstitutable. Miss any one and the advantage is temporary. Telecoms that laid fiber in the late 1990s had something valuable but not rare — rivals were doing the same thing. The result: $4 trillion in value destroyed in three years.</div>
+        <div class="analogy-box">🧠 Analogy: A secret recipe is valuable (people want it), rare (only you have it), hard to imitate (can't reverse engineer), and nonsubstitutable (nothing else tastes the same). That's why KFC's recipe is a genuine competitive asset. Change any one of those four and the advantage collapses.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 2; Barney, 1991</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Fast Follower Problem</div>
+        <div class="vocab-def">The risk that a savvy rival watches a pioneer's efforts, learns from both successes and failures, then enters the market quickly with a comparable or superior product — often at lower cost. Groupon spawned 500 imitators within two years. Facebook copied Snapchat's "Stories" feature in 4 months. The fast follower problem means technology-based advantages are especially fragile because code can be written, products reverse-engineered, and user interfaces mimicked rapidly.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 2</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Switching Costs</div>
+        <div class="vocab-def">The costs — financial, time, data loss, or effort — a customer incurs when moving from one product or service to another. High switching costs make customers sticky, reducing churn. Wells Fargo found that customers using online bill pay (high switching costs) were 70% less likely to leave the bank than those who didn't. The more data, preferences, and history a customer has invested in a system, the less likely they are to switch — even for a superior rival.</div>
+        <div class="analogy-box">🧠 Analogy: Switching banks after 10 years means updating every automatic payment, transferring your balance, learning new apps, and re-entering all your information. Even if the new bank has better rates, many people don't bother. That friction is a switching cost — and it's enormously valuable to the bank that already has you.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 2</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Network Effects (Metcalfe's Law)</div>
+        <div class="vocab-def">A product or service becomes more valuable as more people use it. Facebook, eBay, and Windows dominate their markets primarily because of network effects — the more users join, the more valuable the platform becomes for everyone already there, attracting even more users in a self-reinforcing cycle. Third parties (app developers, advertisers, sellers) are also attracted to the largest networks, compounding the advantage further.</div>
+        <div class="analogy-box">🧠 Analogy: A fax machine is useless if you're the only one who has one. As more people get fax machines, each machine becomes more valuable. That's a network effect — value grows automatically as the user base expands.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 2; Metcalfe's Law</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Porter's Five Forces</div>
+        <div class="vocab-def">A strategic framework that analyzes the competitive attractiveness of an industry by examining five forces: (1) rivalry among existing competitors, (2) threat of new entrants, (3) threat of substitute products or services, (4) bargaining power of buyers, and (5) bargaining power of suppliers. Used to diagnose competitive pressure and identify where technology can shift the balance of power.</div>
+        <div class="vocab-cite">Source: Porter; Gallaugher, Ch. 2</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Value Chain</div>
+        <div class="vocab-def">The set of activities through which a product or service is created and delivered to customers. Primary activities: inbound logistics, operations, outbound logistics, marketing/sales, and support. Secondary activities: firm infrastructure, HR, technology/R&D, and procurement. Firms that build an imitation-resistant value chain — where competitors can't copy their activities without painful trade-offs — have a durable strategic asset. Zara's entire value chain works together in ways competitors can't replicate without abandoning their existing models.</div>
+        <div class="vocab-cite">Source: Porter; Gallaugher, Ch. 2</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Price Transparency & Information Asymmetry</div>
+        <div class="vocab-def">Price transparency is the degree to which complete pricing information is available to all parties. Information asymmetry is when one party in a transaction has significantly more or better information than the other. The internet has dramatically increased price transparency in commodity markets (cars, jewelry, insurance), shifting bargaining power from sellers to buyers. Blue Nile exploited this — showing customers that traditional jewelers marked up diamonds 200%+ — and built the largest online jewelry retailer in the process.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 2</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Commodity</div>
+        <div class="vocab-def">A product or service so similar across providers that customers choose primarily based on price — not features, brand, or quality. When firms compete on operational effectiveness alone and can't differentiate, their offerings become commoditized. This is the trap Porter warns about: if you do the same things as everyone else, eventually your product looks like a commodity and price competition erodes everyone's margins. 175 mattress companies all making "memory foam mattresses" is commodity competition in action.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 2</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- KEY CONCEPTS -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-concepts">💡</div>
+      <div class="section-title">Key Concepts</div>
+    </div>
+    <div class="concept-list">
+
+      <div class="concept-card">
+        <div class="concept-title">The VRIN Framework — What Makes an Advantage Sustainable</div>
+        <div class="concept-body">The resource-based view says sustainable advantage requires all four of these at once. One missing quality and rivals will close the gap.
+        <div class="vrin-grid">
+          <div class="vrin-tile v-tile">
+            <div class="vrin-letter">V</div>
+            <div class="vrin-word">Valuable</div>
+            <div class="vrin-body">The resource must actually help the firm create value — either by reducing costs or allowing it to charge more. A million-server data center is valuable. A warehouse full of Betamax players is not.</div>
+          </div>
+          <div class="vrin-tile r-tile">
+            <div class="vrin-letter">R</div>
+            <div class="vrin-word">Rare</div>
+            <div class="vrin-body">If competitors have the same resource, it's not an advantage — it's just the price of entry. Fiber-optic cables in the 1990s: everyone was laying them. Not rare. Result: $4 trillion in value destroyed.</div>
+          </div>
+          <div class="vrin-tile i-tile">
+            <div class="vrin-letter">I</div>
+            <div class="vrin-word">Imperfectly Imitable</div>
+            <div class="vrin-body">Difficult for others to copy. Amazon's data on hundreds of millions of customers took 25+ years to accumulate — you can't just buy that. TiVo's DVR used off-the-shelf parts — very easy to copy. Cable companies did it in months.</div>
+          </div>
+          <div class="vrin-tile n-tile">
+            <div class="vrin-letter">N</div>
+            <div class="vrin-word">Nonsubstitutable</div>
+            <div class="vrin-body">No equivalent replacement that achieves the same strategic result. Netscape had 80% browser share — but switching to IE was effortless since websites worked the same. The asset was fully substitutable.</div>
+          </div>
+        </div>
+        </div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-title">Porter's Five Forces — Visualized</div>
+        <div class="concept-body">Use this to analyze any industry's competitive attractiveness and where technology is shifting power.
+        <div class="five-forces">
+          <div class="ff-top ff-tile">
+            <div class="ff-name">⬇️ Threat of New Entrants</div>
+            <div class="ff-desc">How easy is it for new competitors to enter? Low barriers = more threats. Cloud computing lowered entry barriers for software startups dramatically.</div>
+          </div>
+          <div class="ff-left ff-tile">
+            <div class="ff-name">➡️ Bargaining Power of Suppliers</div>
+            <div class="ff-desc">Can suppliers raise prices or reduce quality? Uber weakened traditional cab medallion owners by cutting them out entirely.</div>
+          </div>
+          <div class="ff-center">
+            <div class="ff-name">⚔️ Rivalry Among Existing Competitors</div>
+            <div class="ff-desc">Intensity of competition between current players. Technology often intensifies rivalry by expanding the competitive arena from local to global.</div>
+          </div>
+          <div class="ff-right ff-tile">
+            <div class="ff-name">⬅️ Bargaining Power of Buyers</div>
+            <div class="ff-desc">Can customers demand lower prices or better terms? Internet + price transparency shifted power to buyers in commodity markets like cars and jewelry.</div>
+          </div>
+          <div class="ff-bottom ff-tile">
+            <div class="ff-name">⬆️ Threat of Substitutes</div>
+            <div class="ff-desc">Can customers meet the same need a different way? ChatGPT is a substitute for Stack Overflow — usage dropped 50% after ChatGPT launched. Streaming substituted CDs.</div>
+          </div>
+        </div>
+        </div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-title">The Six Assets for Competitive Advantage</div>
+        <div class="concept-body">Technology can create or strengthen all six of these. Firms with multiple reinforcing assets are the hardest to beat.
+        <div class="assets-grid">
+          <div class="asset-tile">
+            <div class="asset-name">🏷️ Brand</div>
+            <div class="asset-body">Strong brands lower customer search costs and inspire trust. Google became a verb before spending heavily on ads. "Advertising is the price you pay for an unremarkable product" — Bezos.</div>
+          </div>
+          <div class="asset-tile">
+            <div class="asset-name">📏 Scale</div>
+            <div class="asset-body">As firms grow, costs spread across more customers. Blue Nile matched 116 jewelry stores with 115 employees and one website. Google's 1.4M servers are a near-impossible barrier to entry for rivals.</div>
+          </div>
+          <div class="asset-tile">
+            <div class="asset-name">🔒 Switching Costs</div>
+            <div class="asset-body">Customer investments in data, learning, and integrations make leaving painful. Wells Fargo customers using online bill pay were 70% less likely to leave — even for better rates.</div>
+          </div>
+          <div class="asset-tile">
+            <div class="asset-name">📊 Data</div>
+            <div class="asset-body">In commodity industries, data is often the only real differentiator. Amazon's purchase history, Netflix's watch history, and Facebook's social graph are assets rivals can't replicate without the same years of user data.</div>
+          </div>
+          <div class="asset-tile">
+            <div class="asset-name">🌐 Network Effects</div>
+            <div class="asset-body">Facebook, eBay, Windows — all dominant because value compounds with users. OpenTable's restaurant reservation monopoly: diners want the service with the most restaurants; restaurants want the service with the most diners.</div>
+          </div>
+          <div class="asset-tile">
+            <div class="asset-name">🚚 Distribution Channels</div>
+            <div class="asset-body">Apple Stores are the highest sales-per-square-foot retail in the U.S. — more than Tiffany's or Lululemon. Google pays Apple $26B/year just to be the default iPhone search engine. Distribution is power.</div>
+          </div>
+        </div>
+        </div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-title">TiVo & Flip: Technology Alone = No Advantage</div>
+        <div class="concept-body">The textbook uses these two examples to make one critical point: <b>if your only advantage is technology, you have no durable advantage.</b><br><br>
+        <b>TiVo</b> pioneered the DVR and its name became a verb. But its technology used off-the-shelf processors, commodity hard drives, and the open source Linux OS — all available to any competitor. Cable companies could build a competing DVR with a fraction of TiVo's development cost. Worse, cable companies had two things TiVo lacked: an existing distribution channel (the cable guy who installs your box) and an existing customer base. TiVo posted losses nearly every year and was ultimately acquired. The few profitable years were from legal victories, not sales.<br><br>
+        <b>Flip Video</b> made pocket video cameras so popular that Cisco paid $590 million for the company. Then Apple added video capture to the iPhone. The same falling chip costs (Moore's Law) that made Flip possible also made it trivial for any smartphone to include the same feature. Cisco killed the Flip division less than two years later, absorbing a $500M+ loss.<br><br>
+        The lesson: <b>technology that can be replicated or embedded into another product will be.</b> Build assets around the technology, not just the technology itself.</div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-title">First Mover vs. Fast Follower — It's More Complicated Than It Sounds</div>
+        <div class="concept-body">The textbook rejects both extremes: "move first or die" AND "follow, don't lead" are both oversimplifications. What actually matters is <b>what you do with your time lead.</b><br><br>
+        <b>When first movers win:</b> Amazon used its early lead in e-commerce to build scale, brand, logistics infrastructure, and data that Barnes & Noble (17 months late) could never close. By 2018, Amazon's market cap was 1,500x the price paid for Barnes & Noble. Netflix used its lead over Blockbuster to build a recommendation engine and subscriber data that Blockbuster (already hemorrhaging money) couldn't match.<br><br>
+        <b>When late movers win:</b> Google was the 21st search engine but the first to build a defensible combination of brand, scale, and ad network. Apple wasn't first to smartphones (BlackBerry and Nokia were) but created the first genuinely defensible platform via the App Store and iOS ecosystem. The incumbents failed to respond — they saw the threat and underestimated it.<br><br>
+        <b>The real rule:</b> Entry into a market is easy. Building the assets (brand, scale, network effects, switching costs, data) that make that position defensible is what matters. "Low barriers to entry" doesn't mean low barriers to sustained success.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-quiz">🎯</div>
+      <div class="section-title">Practice Quiz</div>
+    </div>
+
+    <div class="score-bar" style="margin-bottom:24px;">
+      <div>
+        <div class="score-text">Your score</div>
+        <div class="score-num" id="score">0 / 5</div>
+      </div>
+      <button class="reset-btn" onclick="resetQuiz()">Reset Quiz</button>
+    </div>
+
+    <div class="quiz-container">
+
+      <!-- Q1: correct = A (short) -->
+      <div class="quiz-q" id="q1">
+        <div class="q-number">Question 1</div>
+        <div class="q-text">TiVo invented the DVR, had name recognition so strong that "TiVo" became a verb, and had a superior user interface. Yet the company posted losses nearly every year and was eventually acquired. What does TiVo's failure most directly illustrate?</div>
+        <div class="options">
+          <div class="option" onclick="answer(this,'q1',true)"><div class="opt-letter">A</div> Technology alone rarely creates sustainable advantage if competitors can replicate it.</div>
+          <div class="option" onclick="answer(this,'q1',false)"><div class="opt-letter">B</div> TiVo failed because it entered the market too early before consumers understood DVR technology, and a later entrant with better timing would have dominated the category by waiting until broadband internet made streaming possible.</div>
+          <div class="option" onclick="answer(this,'q1',false)"><div class="opt-letter">C</div> TiVo's failure was primarily a marketing problem — the firm never effectively communicated its product benefits to mainstream consumers despite having a technically superior offering.</div>
+          <div class="option" onclick="answer(this,'q1',false)"><div class="opt-letter">D</div> Being first to market always creates brand recognition but rarely translates to profitability.</div>
+        </div>
+        <div class="feedback" id="q1-fb">✓ Correct! TiVo's DVR was built on off-the-shelf processors, commodity hard drives, and open-source Linux — all available to any competitor. Cable companies copied it in a fraction of the development time, and also had distribution (the cable installation visit) and existing customer relationships that TiVo lacked entirely. The technology was easily replicated, so the advantage was temporary.</div>
+        <div class="feedback wrong-fb" id="q1-wfb">✗ Not quite. The textbook's lesson from TiVo is about technology being easy to copy — not timing or marketing. TiVo's components were all off-the-shelf and available to rivals. Once cable companies saw TiVo's success, they built competing DVRs with minimal development effort and had a distribution advantage TiVo could never match.</div>
+      </div>
+
+      <!-- Q2: correct = C (medium) -->
+      <div class="quiz-q" id="q2">
+        <div class="q-number">Question 2</div>
+        <div class="q-text">Wells Fargo found that customers using online bill pay were 70% less likely to leave the bank than those who didn't. Which of the following VRIN characteristics does this best demonstrate?</div>
+        <div class="options">
+          <div class="option" onclick="answer(this,'q2',false)"><div class="opt-letter">A</div> Valuable — the bill pay service adds genuine utility that customers rely on for managing their finances.</div>
+          <div class="option" onclick="answer(this,'q2',false)"><div class="opt-letter">B</div> Rare — online bill pay is a feature that only Wells Fargo offers among major banks.</div>
+          <div class="option" onclick="answer(this,'q2',true)"><div class="opt-letter">C</div> This demonstrates switching costs specifically — customers stay not because Wells Fargo is better, but because moving all their bill payment settings to a new bank is painful and time-consuming.</div>
+          <div class="option" onclick="answer(this,'q2',false)"><div class="opt-letter">D</div> Nonsubstitutable — there is no alternative way for customers to pay bills automatically without using the bank's online service.</div>
+        </div>
+        <div class="feedback" id="q2-fb">✓ Correct! This is the switching cost asset in action. Customers who've set up all their automatic payments, added all their billers, and learned the system face real friction if they want to leave — even for a bank offering better rates. The 70% lower churn rate is direct evidence of how switching costs lock in customers regardless of competitive offerings.</div>
+        <div class="feedback wrong-fb" id="q2-wfb">✗ Not quite. The bill pay feature may be valuable, but what the 70% retention figure specifically measures is switching costs — the friction customers face when trying to move away. Online bill pay is valuable and even widely available at other banks (not rare), but the investment customers make in setting it up keeps them from leaving. That's switching costs at work.</div>
+      </div>
+
+      <!-- Q3: correct = B (short) -->
+      <div class="quiz-q" id="q3">
+        <div class="q-number">Question 3</div>
+        <div class="q-text">Stack Overflow saw a 50% drop in usage within months of ChatGPT's launch. Stack Overflow's parent company laid off 30% of its workforce. In Porter's Five Forces framework, ChatGPT represents which specific force?</div>
+        <div class="options">
+          <div class="option" onclick="answer(this,'q3',false)"><div class="opt-letter">A</div> A new entrant — ChatGPT entered the market for developer resources and is now competing directly with Stack Overflow for the same users and advertising revenue.</div>
+          <div class="option" onclick="answer(this,'q3',true)"><div class="opt-letter">B</div> A substitute product — programmers can get answers a different way without using Stack Overflow at all.</div>
+          <div class="option" onclick="answer(this,'q3',false)"><div class="opt-letter">C</div> Increased buyer bargaining power — developers now have more leverage to demand free, higher-quality answers from Q&A platforms.</div>
+          <div class="option" onclick="answer(this,'q3',false)"><div class="opt-letter">D</div> Increased rivalry among existing competitors — Stack Overflow now faces more direct competition from similar Q&A platforms that use AI to enhance their offerings.</div>
+        </div>
+        <div class="feedback" id="q3-fb">✓ Correct! Substitute products meet the same need through a completely different means. Programmers use Stack Overflow to get answers to coding questions. ChatGPT gives those same answers faster and without Stack Overflow's famously hostile community. That's a substitute — a different product entirely that renders the original less necessary.</div>
+        <div class="feedback wrong-fb" id="q3-wfb">✗ Not quite. A new entrant would be another Q&A site competing in the same format. ChatGPT is a substitute — it meets the same underlying need (getting coding answers) through a completely different mechanism. The textbook explicitly names this example as a substitute good scenario in the Five Forces framework.</div>
+      </div>
+
+      <!-- Q4: correct = D (medium) -->
+      <div class="quiz-q" id="q4">
+        <div class="q-number">Question 4</div>
+        <div class="q-text">A startup builds a financial services app using the same off-the-shelf software platforms as three large competitors. The app is well-designed and performs well. A strategy consultant says the firm has "operational effectiveness but not strategic positioning." What does this mean for the startup's future?</div>
+        <div class="options">
+          <div class="option" onclick="answer(this,'q4',false)"><div class="opt-letter">A</div> The startup will definitely fail because operational effectiveness is worthless in financial services.</div>
+          <div class="option" onclick="answer(this,'q4',false)"><div class="opt-letter">B</div> The startup will succeed because operational effectiveness is what customers care about — they want the best-performing app, not uniqueness.</div>
+          <div class="option" onclick="answer(this,'q4',false)"><div class="opt-letter">C</div> The startup is protected because financial services regulations prevent large competitors from easily copying new features, giving the startup time to build brand loyalty before incumbents respond.</div>
+          <div class="option" onclick="answer(this,'q4',true)"><div class="opt-letter">D</div> The startup is vulnerable — when offerings are built on the same tools as rivals, competition will eventually collapse to price, and larger competitors with more scale can undercut a smaller firm indefinitely.</div>
+        </div>
+        <div class="feedback" id="q4-fb">✓ Correct! Operational effectiveness means doing the same things well — but if everyone is doing the same things with the same tools, the product becomes a commodity and competition focuses on price. Larger competitors with more scale and resources can sustain price competition longer than startups. Without strategic differentiation — something genuinely hard to copy — the startup has no durable edge.</div>
+        <div class="feedback wrong-fb" id="q4-wfb">✗ Not quite. Porter's warning about operational effectiveness is that it creates commodity competition. When your app and a competitor's app are both built on the same platforms and do the same things, customers will choose based on price — and larger firms with scale advantages can always undercut smaller ones. The startup needs strategic positioning: something genuinely different that rivals can't easily match.</div>
+      </div>
+
+      <!-- Q5: correct = A (short-medium) -->
+      <div class="quiz-q" id="q5">
+        <div class="q-number">Question 5</div>
+        <div class="q-text">Google was the 21st search engine to enter the market. Apple was not the first smartphone maker. Yet both dominate their markets. What does this tell us about the relationship between being first and winning?</div>
+        <div class="options">
+          <div class="option" onclick="answer(this,'q5',true)"><div class="opt-letter">A</div> Being first matters only if you use the time lead to build defensible assets. The real advantage isn't timing — it's what you build while others aren't paying attention.</div>
+          <div class="option" onclick="answer(this,'q5',false)"><div class="opt-letter">B</div> First movers always lose because they bear the cost of educating the market while late movers enter after the market is proven, customer expectations are established, technology is more mature, and the cost of entry has been substantially reduced by the pioneering work of the first mover.</div>
+          <div class="option" onclick="answer(this,'q5',false)"><div class="opt-letter">C</div> First mover advantage is a myth with no exceptions — every market eventually rewards the best product regardless of when it was introduced.</div>
+          <div class="option" onclick="answer(this,'q5',false)"><div class="opt-letter">D</div> Late movers always have a structural cost advantage over first movers in technology markets.</div>
+        </div>
+        <div class="feedback" id="q5-fb">✓ Correct! Google beat 20 earlier search engines not because it was last, but because those incumbents failed to build defensible assets and failed to recognize Google as a real threat until it was too late. Yahoo! even took an investment stake in Google and let it use their search! The lesson: timing is just an enabler. The asset-building that happens during the time lead is what actually creates sustainable advantage.</div>
+        <div class="feedback wrong-fb" id="q1-wfb">✗ Not quite. The textbook rejects both extremes. "First movers always lose" ignores Amazon, Netflix, and Facebook. "First mover advantage is a myth" ignores how those same firms used early leads to build network effects, data, and brand that late movers couldn't close. The nuanced answer: timing is an enabler, not the advantage itself. It's what you build during your lead that matters.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer><p>Chapter 2 · Strategy & Competitive Advantage · Study Guide</p></footer>
+</div>
+
+<script>
+  let answered = {q1:false,q2:false,q3:false,q4:false,q5:false};
+  let correctCount = 0;
+
+  function answer(el, qid, isCorrect) {
+    if (answered[qid]) return;
+    answered[qid] = true;
+    const opts = el.closest('.options').querySelectorAll('.option');
+    opts.forEach(o => o.style.pointerEvents = 'none');
+    if (isCorrect) {
+      el.classList.add('correct');
+      correctCount++;
+      document.getElementById(qid+'-fb').style.display = 'block';
+    } else {
+      el.classList.add('wrong');
+      document.getElementById(qid+'-wfb').style.display = 'block';
+      opts.forEach(o => {
+        if (o.getAttribute('onclick') && o.getAttribute('onclick').includes('true')) o.classList.add('correct');
+      });
+    }
+    document.getElementById('score').textContent = correctCount + ' / 5';
+  }
+
+  function resetQuiz() {
+    answered = {q1:false,q2:false,q3:false,q4:false,q5:false};
+    correctCount = 0;
+    document.getElementById('score').textContent = '0 / 5';
+    document.querySelectorAll('.option').forEach(o => {
+      o.classList.remove('correct','wrong');
+      o.style.pointerEvents = '';
+    });
+    document.querySelectorAll('.feedback').forEach(f => f.style.display = 'none');
+  }
+</script>
+</body>
+</html>
