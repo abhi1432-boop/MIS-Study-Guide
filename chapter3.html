@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chapter 3 — Network Effects & Platform Strategy</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0d0f1a; --surface: #13162a; --border: #1e2340;
+      --accent: #e8b84b; --accent2: #5b8dee; --text: #e8eaf0;
+      --muted: #7a7f9a; --green: #4cbb8a; --red: #e05c6a;
+    }
+    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background-image: linear-gradient(rgba(91,141,238,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(91,141,238,0.03) 1px, transparent 1px);
+      background-size: 60px 60px; pointer-events: none; z-index: 0;
+    }
+    .wrapper { position: relative; z-index: 1; max-width: 820px; margin: 0 auto; padding: 48px 24px 80px; }
+
+    .back { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); text-decoration: none; font-size: 0.85rem; margin-bottom: 40px; transition: color 0.2s; }
+    .back:hover { color: var(--accent); }
+    .back::before { content: '←'; }
+
+    .ch-label { font-size: 11px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); }
+    h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; margin: 10px 0 6px; line-height: 1.15; }
+    .ch-subtitle { color: var(--muted); font-size: 0.95rem; font-weight: 300; }
+    .divider { width: 50px; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); margin: 24px 0; }
+
+    .section { margin-top: 52px; }
+    .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+    .section-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+    .icon-vocab { background: rgba(232,184,75,0.12); }
+    .icon-concepts { background: rgba(91,141,238,0.12); }
+    .icon-quiz { background: rgba(76,187,138,0.12); }
+    .section-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; }
+
+    .vocab-list { display: flex; flex-direction: column; gap: 12px; }
+    .vocab-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; }
+    .vocab-term { font-weight: 500; font-size: 1rem; color: var(--accent); margin-bottom: 6px; }
+    .vocab-def { font-size: 0.9rem; color: var(--text); line-height: 1.65; }
+    .vocab-cite { font-size: 0.78rem; color: var(--muted); margin-top: 8px; font-style: italic; }
+    .analogy-box { margin-top: 10px; background: rgba(232,184,75,0.06); border-left: 2px solid rgba(232,184,75,0.4); padding: 8px 12px; border-radius: 0 6px 6px 0; font-size: 0.83rem; color: var(--accent); line-height: 1.5; }
+
+    .concept-list { display: flex; flex-direction: column; gap: 12px; }
+    .concept-card { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent2); border-radius: 0 12px 12px 0; padding: 18px 20px; }
+    .concept-title { font-weight: 500; color: var(--accent2); font-size: 0.95rem; margin-bottom: 8px; }
+    .concept-body { font-size: 0.9rem; line-height: 1.7; color: var(--text); }
+    .concept-body b { color: var(--accent); font-weight: 500; }
+
+    /* Three sources of value grid */
+    .three-sources { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 14px; }
+    .src-tile { border-radius: 10px; padding: 14px 16px; }
+    .src-exchange  { background: rgba(76,187,138,0.07);  border: 1px solid rgba(76,187,138,0.2); }
+    .src-staying   { background: rgba(91,141,238,0.07);  border: 1px solid rgba(91,141,238,0.2); }
+    .src-complements { background: rgba(232,184,75,0.07); border: 1px solid rgba(232,184,75,0.2); }
+    .src-icon  { font-size: 1.5rem; margin-bottom: 6px; }
+    .src-name  { font-size: 0.82rem; font-weight: 600; margin-bottom: 6px; }
+    .src-exchange .src-name  { color: var(--green); }
+    .src-staying .src-name   { color: var(--accent2); }
+    .src-complements .src-name { color: var(--accent); }
+    .src-body  { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+
+    /* Market type diagram */
+    .market-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+    .mkt-tile { border-radius: 10px; padding: 14px 16px; }
+    .mkt-one  { background: rgba(91,141,238,0.07); border: 1px solid rgba(91,141,238,0.2); }
+    .mkt-two  { background: rgba(232,184,75,0.07); border: 1px solid rgba(232,184,75,0.2); }
+    .mkt-label { font-size: 1rem; font-weight: 700; font-family: 'Playfair Display', serif; margin-bottom: 4px; }
+    .mkt-one .mkt-label  { color: var(--accent2); }
+    .mkt-two .mkt-label  { color: var(--accent); }
+    .mkt-subtitle { font-size: 0.82rem; font-weight: 600; margin-bottom: 6px; }
+    .mkt-body { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+
+    /* Strategies grid */
+    .strategies-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 10px; margin-top: 12px; }
+    .strat-tile { background: rgba(91,141,238,0.07); border: 1px solid rgba(91,141,238,0.18); border-radius: 8px; padding: 12px 14px; }
+    .strat-name { font-size: 0.85rem; font-weight: 600; color: var(--accent2); margin-bottom: 4px; }
+    .strat-body { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+
+    .quiz-container { display: flex; flex-direction: column; gap: 28px; }
+    .quiz-q { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px 24px 20px; }
+    .q-number { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); margin-bottom: 10px; }
+    .q-text { font-size: 1rem; font-weight: 500; line-height: 1.55; margin-bottom: 18px; }
+    .options { display: flex; flex-direction: column; gap: 8px; }
+    .option { display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 0.88rem; line-height: 1.5; transition: border-color 0.2s, background 0.2s; user-select: none; }
+    .option:hover { border-color: var(--accent2); background: rgba(91,141,238,0.06); }
+    .option.correct { border-color: var(--green) !important; background: rgba(76,187,138,0.1) !important; }
+    .option.wrong   { border-color: var(--red)   !important; background: rgba(224,92,106,0.08) !important; }
+    .opt-letter { min-width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; flex-shrink: 0; margin-top: 1px; }
+    .option.correct .opt-letter { background: var(--green); border-color: var(--green); color: #fff; }
+    .option.wrong   .opt-letter { background: var(--red);   border-color: var(--red);   color: #fff; }
+    .feedback { margin-top: 12px; font-size: 0.83rem; color: var(--green); display: none; line-height: 1.55; padding: 10px 12px; background: rgba(76,187,138,0.06); border-radius: 8px; }
+    .feedback.wrong-fb { color: #f09a6a; background: rgba(224,92,106,0.06); }
+
+    .score-bar { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    .score-text { font-size: 0.95rem; color: var(--muted); }
+    .score-num  { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; color: var(--accent); }
+    .reset-btn  { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 8px 18px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-family: 'DM Sans', sans-serif; transition: border-color 0.2s, color 0.2s; }
+    .reset-btn:hover { border-color: var(--accent); color: var(--accent); }
+    footer { text-align: center; margin-top: 64px; color: var(--muted); font-size: 0.8rem; }
+
+    @media (max-width: 560px) {
+      .three-sources { grid-template-columns: 1fr; }
+      .market-grid   { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+  <a href="index.html" class="back">Back to all chapters</a>
+
+  <div class="ch-label">Chapter 03</div>
+  <h1>Network Effects & Platform Strategy</h1>
+  <p class="ch-subtitle">Why bigger networks get bigger — and how to build, attack, or defend one</p>
+  <div class="divider"></div>
+
+  <!-- VOCAB -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-vocab">📖</div>
+      <div class="section-title">Vocabulary</div>
+    </div>
+    <div class="vocab-list">
+
+      <div class="vocab-card">
+        <div class="vocab-term">Network Effects (Metcalfe's Law / Network Externalities)</div>
+        <div class="vocab-def">When the value of a product or service increases as its number of users grows. More users = more value — automatically, without the firm doing anything extra. Bill Gates used network effects to turn Windows and Office into near-monopolies. Facebook, eBay, Instagram, Uber, and Airbnb all owe their dominance to the same concept. Metcalfe's Law states that the value of a network equals the number of users squared — meaning growth compounds dramatically as a network scales.</div>
+        <div class="analogy-box">🧠 Analogy: A fax machine owned by one person is a paperweight. Two fax machines = one connection. A million fax machines = nearly a billion possible connections. The machine itself didn't get better — the network did. That's a network effect: value grows automatically as the user base expands.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 3; Metcalfe's Law</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Platform</div>
+        <div class="vocab-def">A product or service that allows for the development and integration of complementary goods, effectively creating an ecosystem of value-added offerings. Windows, iOS, the Kindle, and Facebook are all platforms. Platforms differ from regular products because they enable others to build on top of them — turning one firm's product into an entire industry. Eight of the ten most valuable U.S. firms by market cap are platform companies (Apple, Microsoft, Alphabet, Amazon, Nvidia, Meta, Tesla, Visa).</div>
+        <div class="analogy-box">🧠 Analogy: A shopping mall is a platform. The mall owner doesn't run every store — they create the space, the foot traffic, and the rules, and then let other businesses thrive inside it. iOS is the same: Apple provides the platform, and over 2 million app developers build the stores inside it.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 3</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Staying Power</div>
+        <div class="vocab-def">The perceived long-term viability of a product or service. Users don't invest in platforms they think will disappear. A product with more users signals greater staying power — it's less likely to go bankrupt or get displaced before the user's investment pays off. Staying power is deeply tied to switching costs: the more a user has invested in a product (data, configurations, learning), the more they need to trust it will be around long enough to justify that investment. Nook e-reader buyers who saw Barnes & Noble struggling learned this lesson the hard way.</div>
+        <div class="analogy-box">🧠 Analogy: Choosing an operating system is like betting on a city. You wouldn't buy a house, learn the road system, and build a life in a city you thought was going to become a ghost town next year. The bigger and more established the city, the safer that investment feels. Staying power is what makes people willing to bet their workflow on a platform.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 3</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">One-Sided Market & Same-Side Exchange Benefits</div>
+        <div class="vocab-def">A one-sided market derives most of its value from a single class of users. Messaging is the classic example — everyone both sends and receives. The benefits come from members of the same group attracting more members of the same group. Economists call these same-side exchange benefits. Snapchat, WhatsApp, and SMS are all one-sided: you choose a messaging tool based on how many of your contacts are already there. The product is most valuable when everyone uses the same one.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 3</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Two-Sided Market & Cross-Side Exchange Benefits</div>
+        <div class="vocab-def">A two-sided market has two distinct categories of participants who each need the other to create value. Video game consoles are the textbook example: gamers buy consoles with the most great games; developers write games for consoles with the most players. When more users on one side attract more participants on the other, those are cross-side exchange benefits. Mobile payments (consumers ↔ merchants), credit cards (cardholders ↔ merchants), and app stores (users ↔ developers) all work this way. Jump-starting a two-sided market is notoriously hard — you need both sides simultaneously.</div>
+        <div class="analogy-box">🧠 Analogy: A farmers market is a two-sided market. Shoppers come if there are great vendors; vendors show up if there are lots of shoppers. An empty farmers market attracts neither. The organizer has to seed both sides before the market takes off on its own.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 3</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Freemium</div>
+        <div class="vocab-def">A product with a free version — sometimes with limited features or a time/usage cap — designed to allow customers to try the product and entice them into a paid subscription. Zoom's free tier offered every paid feature with only a 40-minute meeting cap. This "shows off the car before you buy it" approach removed the risk of upgrading. The free version is effectively a subsidy — the firm absorbs costs now to build a user base that generates network effects and eventual conversions. ChatGPT, Spotify, Roblox, and Dropbox all use freemium models.</div>
+        <div class="analogy-box">🧠 Analogy: Free samples at a grocery store are freemium. You get the real product, not a watered-down version — just a limited amount. If you like it enough, you buy the full package. Zoom did the same: free Zoom is real Zoom, just capped at 40 minutes. Once a business needs longer meetings, the $9.99/month decision is obvious.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 3</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Congestion Effects</div>
+        <div class="vocab-def">When increasing numbers of users lower — rather than raise — the value of a product or service. The opposite of network effects. Congestion effects occur when a key resource becomes scarce due to too much demand. SimCity's launch was so overwhelmed that Amazon temporarily halted sales. Twitter's early infrastructure failures (the "fail whale") were visible congestion effects. Social media feeds full of too much content also create a kind of attention congestion — users can't find value in the noise. Dominant platforms must scale infrastructure to prevent network effects from inverting into congestion effects.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 3</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Blue Ocean Strategy</div>
+        <div class="vocab-def">Competing by creating and entering an uncontested market space rather than fighting rivals in an existing, crowded one. Instead of competing in "blood-red waters" where fierce rivals fight over every scrap, firms seek "blue oceans" of untapped demand. Nintendo's Wii didn't try to out-graphic Xbox or PlayStation — it redefined gaming for families, women, and non-gamers entirely. Nvidia found a blue ocean in AI/parallel computing. Uber found ride-share customers who would never have called a cab. Blue ocean wins are strongest when the early mover uses the lead to build defensible assets before rivals figure out the new market exists.</div>
+        <div class="analogy-box">🧠 Analogy: Instead of fighting over every fish in an overfished pond with 50 other boats, sail to a part of the ocean where no one else has cast a line. Nintendo didn't try to catch the same hardcore gamer fish as Sony and Microsoft — they found a whole new ocean of players no one else was fishing.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 3; Kim & Mauborgne, Blue Ocean Strategy</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Technological Leapfrogging</div>
+        <div class="vocab-def">Competing against a dominant network by offering a new technology so superior that its value overcomes the total resistance of the incumbent's exchange benefits, switching costs, and complementary products combined. Extremely difficult to pull off. A newcomer can't just be better — they have to overcome the entire installed base advantage. The PlayStation 2 beat the technically superior Xbox because PS2's network effects (more users, more developers, more games) were worth more to buyers than the Xbox's better hardware. The bar isn't "better product" — it's "so much better that it beats switching costs + network effects + complementary products."</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 3</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Viral Promotion</div>
+        <div class="vocab-def">A growth strategy where existing users recruit new users — often through incentives, social sharing, or the product's design itself. Viral promotion is especially powerful in network effects markets because new users add value for existing users, creating a self-reinforcing growth loop. Uber and Airbnb used friend referral incentives as "trust proxies" — a friend's endorsement overcomes the trust barrier of getting into a stranger's car. Shein and Temu used viral promotions aggressively to compete with Amazon, with Temu's app reaching #1 in U.S. shopping app downloads. Roblox grew into a $30 billion company spending only 6% of revenue on marketing — almost entirely through kids recruiting friends.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 3</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- KEY CONCEPTS -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-concepts">💡</div>
+      <div class="section-title">Key Concepts</div>
+    </div>
+    <div class="concept-list">
+
+      <div class="concept-card">
+        <div class="concept-title">The Three Sources of Network Value</div>
+        <div class="concept-body">Network effects aren't just about users attracting more users. The real power comes from three compounding forces that reinforce each other. Dominant platforms typically lead in all three.
+        <div class="three-sources">
+          <div class="src-tile src-exchange">
+            <div class="src-icon">🔗</div>
+            <div class="src-name">Exchange</div>
+            <div class="src-body">Every network fosters some kind of exchange — messages, money, games, files, reviews. More users = more potential connections = more value. Instagram for one person is worthless. Instagram for 2 billion is where careers are built.</div>
+          </div>
+          <div class="src-tile src-staying">
+            <div class="src-icon">⚓</div>
+            <div class="src-name">Staying Power</div>
+            <div class="src-body">Users bet their time and data on platforms they believe will last. Larger networks feel safer — and that trust keeps users investing more, which creates switching costs that make them even less likely to leave. A virtuous lock-in cycle.</div>
+          </div>
+          <div class="src-tile src-complements">
+            <div class="src-icon">🧩</div>
+            <div class="src-name">Complementary Benefits</div>
+            <div class="src-body">Third parties invest in building on the dominant platform — apps, books, accessories, labor. More users attract more developers; more apps attract more users. Apple's App Store has 2M+ apps downloaded 130B+ times, generating over $1 trillion in ecosystem revenue.</div>
+          </div>
+        </div>
+        </div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-title">One-Sided vs. Two-Sided Markets</div>
+        <div class="concept-body">Understanding the structure of a network is critical before crafting strategy. Same-side and cross-side benefits require completely different approaches to launch and scale.
+        <div class="market-grid">
+          <div class="mkt-tile mkt-one">
+            <div class="mkt-label">One-Sided</div>
+            <div class="mkt-subtitle">Same-Side Exchange Benefits</div>
+            <div class="mkt-body">All participants are one type. Value comes from members of the same group attracting more members. <b>Examples:</b> SMS, WhatsApp, Snapchat, fax machines. Strategy: get to critical mass fast — first mover advantage is enormous since users go where their contacts already are.</div>
+          </div>
+          <div class="mkt-tile mkt-two">
+            <div class="mkt-label">Two-Sided</div>
+            <div class="mkt-subtitle">Cross-Side Exchange Benefits</div>
+            <div class="mkt-body">Two distinct participant types each need the other. <b>Examples:</b> App stores (users ↔ developers), credit cards (cardholders ↔ merchants), video game consoles (gamers ↔ game studios). Strategy: seed one side first, subsidize the other. "Chicken-and-egg" problem at launch — must solve both simultaneously.</div>
+          </div>
+        </div>
+        <br/>
+        <b>Case study — EV Charging:</b> Tesla vs. CCS was a two-sided battle. Tesla seeded the user side (two-thirds of all U.S. EVs) AND the charging side (3x more ports than rivals). When it opened its standard in 2022, every major automaker switched — because the two-sided lead was insurmountable. The lesson: in two-sided markets, you need a dominant position on <i>both</i> sides, not just one.
+        </div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-title">Why Network Effect Markets Are Winner-Take-All</div>
+        <div class="concept-body">Network markets behave fundamentally differently from traditional markets. Three dynamics make them near-monopolistic by nature:<br><br>
+        <b>1. Tipping:</b> Once a leader becomes clear, bandwagons form and adoption overwhelmingly favors one firm. Blu-ray vs. HD DVD: once major studios chose Blu-ray, HD DVD folded within weeks — not years. The losing side doesn't slowly fade; it collapses.<br><br>
+        <b>2. The Leapfrog Problem:</b> A newcomer can't just offer a better product. They must overcome the incumbent's exchange value (existing user base to communicate with), switching costs (everything users have invested in the platform), AND complementary benefits (all the third-party products built for the leader). PlayStation 2 beat the technically superior Xbox specifically because of this math — PS2's network was worth more than Xbox's hardware advantages.<br><br>
+        <b>3. Bargaining Power Compounds:</b> At the peak of iTunes, Apple controlled 75%+ of digital music sales and could dictate pricing to the "Big Four" record labels — themselves an oligopoly representing 85% of U.S. music. When your network is indispensable, you gain pricing power over suppliers and partners that would be unthinkable in normal markets.<br><br>
+        The upside for incumbents: <b>innovation within the standard flourishes.</b> Windows' dominance attracted millions of developers building for Windows because they knew users would be there. Fragmented markets (early Android's 400+ device variants) stifle developers — Glu Mobile had to build 56 versions of Monopoly for one carrier.
+        </div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-title">Strategies for Competing When Network Effects Are Present</div>
+        <div class="concept-body">Whether you're an attacker or defender, these are the proven playbook moves. The most successful firms layer multiple strategies simultaneously.
+        <div class="strategies-grid">
+          <div class="strat-tile">
+            <div class="strat-name">🚀 Move Early</div>
+            <div class="strat-body">eBay's Japan failure: Yahoo! launched 5 months before eBay — that 5-month lead locked up the network and eBay never recovered. Amazon's 4-year cloud lead over Google is still paying dividends in market share today.</div>
+          </div>
+          <div class="strat-tile">
+            <div class="strat-name">💸 Subsidize Adoption</div>
+            <div class="strat-body">PayPal paid users $15 to sign up. Zoom gave free access to K–12 schools during COVID. Sony sold PS3s at $300 below cost to plant Blu-ray players in homes. Short-term cost; long-term network dominance.</div>
+          </div>
+          <div class="strat-tile">
+            <div class="strat-name">📣 Viral Promotion</div>
+            <div class="strat-body">Temu's $5 referral bonus + 20% commission made it the #1 U.S. shopping app. Airbnb's friend referrals boosted bookings 25%. Trust from a friend overcomes adoption inertia for unfamiliar brands.</div>
+          </div>
+          <div class="strat-tile">
+            <div class="strat-name">🌊 Redefine the Market</div>
+            <div class="strat-body">Nintendo Wii targeted non-gamers (families, seniors) instead of competing for the same hardcore users as Xbox and PlayStation. More users = stronger network effects, even if it means a different customer entirely.</div>
+          </div>
+          <div class="strat-tile">
+            <div class="strat-name">🤝 Form Alliances</div>
+            <div class="strat-body">Rival banks formed NYCE to collectively beat Citibank's ATM monopoly. Lyft, Ola, Didi, and GrabTaxi built a global alliance against Uber — sharing tech and market knowledge to combine their separate networks.</div>
+          </div>
+          <div class="strat-tile">
+            <div class="strat-name">📦 Leverage Distribution</div>
+            <div class="strat-body">Sun bundled Java's virtual machine with Netscape — instantly creating millions of potential Java users. Microsoft bundled Media Player with Windows. ChatGPT is being embedded in Bing, Edge, Office, and Azure simultaneously.</div>
+          </div>
+          <div class="strat-tile">
+            <div class="strat-name">🌱 Seed Complements</div>
+            <div class="strat-body">Adobe gives away Acrobat Reader to build a market for its paid PDF-creation software. Sony planted Blu-ray players in homes by subsidizing PS3s. ThredUp gives instant seller credit to balance supply and demand on both sides.</div>
+          </div>
+          <div class="strat-tile">
+            <div class="strat-name">🔄 Backward Compatibility</div>
+            <div class="strat-body">Apple's Rosetta 2 let every Intel Mac app run on M1 chips — zero installed-base reset. Samsung Pay's magnetic signal mimics a physical credit card swipe, meaning merchants accept it without even agreeing to. Compatibility = inherited network.</div>
+          </div>
+        </div>
+        </div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-title">Zoom's Rise — The Perfect Network Effects Case Study</div>
+        <div class="concept-body">Before COVID-19, Zoom was a well-regarded but niche tool. Cisco's WebEx dominated enterprise video conferencing. Microsoft, Google, Facebook, Skype, and Apple FaceTime all had competing products. How did a lesser-known firm beat all of them?<br><br>
+        <b>The founder's edge:</b> Eric Yuan built WebEx, rose to VP of Engineering at Cisco, and repeatedly heard customers complain about dropped calls, laggy video, and painful installation. Cisco dismissed his requests to fix it — hardware, not video software, was their real business. Yuan quit, took 40 engineers, and built Zoom specifically to eliminate every complaint.<br><br>
+        <b>The product advantage:</b> Zoom worked on any platform with no configuration. Meeting codes were simple digit strings (Skype's were complex alphanumeric keys). Joining required no account — just the code. Video lag was obsessively kept below 150ms. Free tier included every paid feature; only limit was a 40-minute meeting cap.<br><br>
+        <b>The network effects play:</b> Giving Zoom free to K–12 schools during COVID was financially risky — the firm was already overtaxed. But it created millions of parent users. When those parents (many in IT roles) were dissatisfied with their corporate solutions, they requested Zoom. Network effects grew like a hockey stick. Within weeks, "Zooming" was a verb.<br><br>
+        <b>The staying power response:</b> User base grew 20x in 4 months. Security crises hit. Yuan paused all new features for 90 days and redirected every engineer to security and stability. A startup's nimbleness in a public company's body. The result: when earnings came in, the market cap shot up by more than half the value of Verizon in a single day.<br><br>
+        <b>The lesson:</b> Cisco lost the market by ignoring customer needs. Zoom won it by obsessively solving them — then used a freemium model, zero-friction adoption, and a perfectly timed subsidy to turn COVID necessity into permanent network effects.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-quiz">🎯</div>
+      <div class="section-title">Practice Quiz</div>
+    </div>
+
+    <div class="score-bar" style="margin-bottom:24px;">
+      <div>
+        <div class="score-text">Your score</div>
+        <div class="score-num" id="score">0 / 5</div>
+      </div>
+      <button class="reset-btn" onclick="resetQuiz()">Reset Quiz</button>
+    </div>
+
+    <div class="quiz-container">
+
+      <!-- Q1: correct = B -->
+      <div class="quiz-q" id="q1">
+        <div class="q-number">Question 1</div>
+        <div class="q-text">In the early 2000s, Xbox was widely reviewed as the technically superior console — better hardware, better graphics, better online capability. PlayStation 2 still dominated the market. Which concept from Chapter 3 best explains why the better product lost?</div>
+        <div class="options">
+          <div class="option" onclick="answer(this,'q1',false)"><div class="opt-letter">A</div> Blue ocean strategy — Microsoft targeted the wrong market segment with Xbox, competing for the same hardcore gaming audience as PlayStation instead of finding new users.</div>
+          <div class="option" onclick="answer(this,'q1',true)"><div class="opt-letter">B</div> Network effects — PS2's larger user base attracted more game developers, which produced more games, which attracted more users. The value of Xbox's hardware was less than the value of PS2's network.</div>
+          <div class="option" onclick="answer(this,'q1',false)"><div class="opt-letter">C</div> Congestion effects — Xbox's online network was overwhelmed by demand, degrading the experience and pushing users toward PlayStation's more stable servers.</div>
+          <div class="option" onclick="answer(this,'q1',false)"><div class="opt-letter">D</div> The fast follower problem — Microsoft entered the market too late and couldn't overcome the head start PlayStation had in branding and retail relationships.</div>
+        </div>
+        <div class="feedback" id="q1-fb">✓ Correct! This is the central lesson of the chapter's leapfrog problem. To beat an established network, a newcomer needs to overcome not just the incumbent's technology but the entire value of its installed base: exchange (users to play with), switching costs (game libraries already owned), and complementary benefits (thousands more titles). Xbox's superior hardware couldn't outweigh all three — so the "better" product lost.</div>
+        <div class="feedback wrong-fb" id="q1-wfb">✗ Not quite. The textbook uses this example specifically to illustrate that network effects can make the best product lose. PS2 had more users, which attracted more game developers, which produced more games, which attracted even more users. That self-reinforcing cycle was worth more to buyers than Xbox's technical advantages. The bar for a newcomer isn't "better product" — it's "better enough to overcome the entire value of the existing network."</div>
+      </div>
+
+      <!-- Q2: correct = C -->
+      <div class="quiz-q" id="q2">
+        <div class="q-number">Question 2</div>
+        <div class="q-text">Square's Cash App launched far behind PayPal and Venmo, lacking their user bases and without the built-in hardware distribution that Apple and Google enjoyed. It was struggling to gain traction — until it embraced Bitcoin. Within a year, the Cash App was driving nearly half of Block Inc.'s profits. Which network effects strategy does this best illustrate?</div>
+        <div class="options">
+          <div class="option" onclick="answer(this,'q2',false)"><div class="opt-letter">A</div> Subsidizing adoption — Square offered below-cost Bitcoin transactions as a financial incentive to get users to sign up, trading short-term losses for long-term user base growth.</div>
+          <div class="option" onclick="answer(this,'q2',false)"><div class="opt-letter">B</div> Forming alliances — Square partnered with cryptocurrency exchanges to add Bitcoin functionality, borrowing credibility from established crypto networks to accelerate adoption.</div>
+          <div class="option" onclick="answer(this,'q2',true)"><div class="opt-letter">C</div> Redefining the market — Bitcoin attracted a segment of users (crypto buyers) that PayPal and Venmo were ignoring entirely, bringing a new class of users into the network rather than fighting for the same ones.</div>
+          <div class="option" onclick="answer(this,'q2',false)"><div class="opt-letter">D</div> Leveraging backward compatibility — by accepting existing credit card standards alongside Bitcoin, Square made it frictionless for current PayPal users to switch without giving up their existing payment habits.</div>
+        </div>
+        <div class="feedback" id="q2-fb">✓ Correct! This is the textbook's "expand by redefining the market" strategy. Instead of fighting over the same mobile payment users as PayPal and Venmo — a battle it was losing — Square found a whole new category of users (crypto enthusiasts) that no major payment app was serving. By going after a different, underserved audience, it brought new users into its network and turned a struggling product into a profit engine. Like Nintendo targeting non-gamers with the Wii, the key was finding users nobody else was fishing for.</div>
+        <div class="feedback wrong-fb" id="q2-wfb">✗ Not quite. The textbook specifically uses Cash App's Bitcoin pivot as an example of "redefining the market" — not subsidies, alliances, or compatibility. Cash App wasn't trying to beat PayPal by offering better prices on the same service. It found an entirely new category of users (Bitcoin buyers) that the market leaders were ignoring. That's a blue ocean / market redefinition strategy: instead of competing for existing users, bring in new ones nobody else is serving.</div>
+      </div>
+
+      <!-- Q3: correct = A -->
+      <div class="quiz-q" id="q3">
+        <div class="q-number">Question 3</div>
+        <div class="q-text">During COVID-19, Zoom offered its full professional product for free to K–12 schools — even though this created enormous infrastructure costs and support burdens with zero direct revenue. Eric Yuan called this a risky move. From a network effects perspective, what was the strategic logic?</div>
+        <div class="options">
+          <div class="option" onclick="answer(this,'q3',true)"><div class="opt-letter">A</div> Subsidizing adoption — parents who learned Zoom through their kids' schooling later demanded it at their companies, converting a free user base into a viral corporate sales force that no marketing budget could replicate.</div>
+          <div class="option" onclick="answer(this,'q3',false)"><div class="opt-letter">B</div> Blue ocean strategy — K–12 schools represented an entirely new market segment that Zoom's corporate rivals hadn't yet entered, giving Zoom a first-mover advantage in the education vertical.</div>
+          <div class="option" onclick="answer(this,'q3',false)"><div class="opt-letter">C</div> Backward compatibility — offering free access to K–12 schools who were already using other video platforms made it frictionless for those schools to migrate without abandoning their existing meeting formats.</div>
+          <div class="option" onclick="answer(this,'q3',false)"><div class="opt-letter">D</div> Seeding the market with complements — free school access encouraged educational software developers to build Zoom integrations, expanding the platform's ecosystem and making Zoom more valuable for corporate users.</div>
+        </div>
+        <div class="feedback" id="q3-fb">✓ Correct! This is subsidizing adoption taken to an extreme. Zoom gave away the premium product — not a limited trial — to an entire user class (K–12 schools) that would generate zero direct revenue. The payoff: millions of parents became Zoom users. When those parents (many in IT or management roles) experienced inferior corporate video solutions, they specifically requested Zoom. The free school subsidy effectively created a word-of-mouth sales force that converted into millions of paying corporate customers. No advertising could have done that as efficiently.</div>
+        <div class="feedback wrong-fb" id="q3-wfb">✗ Not quite. The logic here is subsidizing adoption — one of the core network effects strategies from the chapter. Zoom accepted a real financial burden (free product + support costs for schools) in exchange for a strategic outcome: turning parents into Zoom users who would then demand Zoom at their workplaces. The textbook explicitly describes this as a risky subsidy that paid off brilliantly, because parents familiar with Zoom fueled awareness and corporate network effects. The goal was always the corporate market — schools were the on-ramp.</div>
+      </div>
+
+      <!-- Q4: correct = D -->
+      <div class="quiz-q" id="q4">
+        <div class="q-number">Question 4</div>
+        <div class="q-text">Meta launched Threads in 2023 and gained 100 million users in just 5 days — dethroning ChatGPT as the fastest-adopted app of all time. Three months later, active usage had dropped more than 80% from peak. Which combination of concepts from Chapter 3 best explains both the rapid rise AND the subsequent crash?</div>
+        <div class="options">
+          <div class="option" onclick="answer(this,'q4',false)"><div class="opt-letter">A</div> The rise: congestion effects from a massive launch overwhelming infrastructure. The crash: blue ocean strategy failed when the targeted non-Twitter audience didn't find value in the platform.</div>
+          <div class="option" onclick="answer(this,'q4',false)"><div class="opt-letter">B</div> The rise: freemium model attracted users by removing cost barriers. The crash: switching costs were too high, preventing users from making Threads their primary platform.</div>
+          <div class="option" onclick="answer(this,'q4',false)"><div class="opt-letter">C</div> The rise: backward compatibility with Twitter's format allowed seamless migration. The crash: rival apps subsidized adoption aggressively enough to pull users back to competing platforms.</div>
+          <div class="option" onclick="answer(this,'q4',true)"><div class="opt-letter">D</div> The rise: leveraging Instagram's 500M+ daily users dramatically lowered switching costs and seeded both sides of the exchange network instantly. The crash: Threads launched without key features (hashtags, trending, DMs, search), so users who arrived found a product that couldn't replace Twitter — and left.</div>
+        </div>
+        <div class="feedback" id="q4-fb">✓ Correct! The textbook uses Threads as a lesson in two separate ideas. The rise: Meta brilliantly exploited distribution — Instagram credentials instantly connected Threads to an existing network of followers and following relationships, bypassing the cold-start problem entirely. The crash: lowering adoption barriers is only half the battle. Users arrived expecting a genuine Twitter replacement and found a product missing fundamental features. The lesson is that a firm can leverage one platform to dramatically lower switching costs and grow a new network — but if the product isn't ready to retain those users, the initial growth is illusory.</div>
+        <div class="feedback wrong-fb" id="q4-wfb">✗ Not quite. The textbook's Threads analysis covers two distinct phases. For the rise: the key concept is leveraging Instagram as a distribution channel — 500 million daily users could join Threads with no new account and instantly connected to their existing followers, solving the cold-start problem of a new social network. For the crash: Threads launched without hashtags, trending topics, direct messages, or search — basic features that made Twitter useful. Users came because joining was easy, but left because the product couldn't replace Twitter. Lower barriers bring users in; the product still has to keep them.</div>
+      </div>
+
+      <!-- Q5: correct = B -->
+      <div class="quiz-q" id="q5">
+        <div class="q-number">Question 5</div>
+        <div class="q-text">Yahoo! tried to challenge eBay's auction dominance in the U.S. by waiving all seller fees — making eBay's service free to emulate at zero cost. It failed. eBay sellers largely refused to move. Which two switching cost factors most directly explain why even a free rival couldn't unseat eBay?</div>
+        <div class="options">
+          <div class="option" onclick="answer(this,'q5',false)"><div class="opt-letter">A</div> Congestion effects and staying power — Yahoo! Auctions was overwhelmed with low-quality listings from fee-avoiding sellers, while eBay's brand reputation made buyers trust its platform more for high-value purchases.</div>
+          <div class="option" onclick="answer(this,'q5',true)"><div class="opt-letter">B</div> Exchange value (fewer buyers on Yahoo! meant lower winning bids) and reputation switching costs (migrating to Yahoo! meant abandoning hard-earned seller ratings that reduced buyer risk on eBay).</div>
+          <div class="option" onclick="answer(this,'q5',false)"><div class="opt-letter">C</div> Complementary benefits and viral promotion — eBay had more shipping integrations, payment tools, and seller software built on its platform, and its loyal sellers actively discouraged their buyer communities from using Yahoo! Auctions.</div>
+          <div class="option" onclick="answer(this,'q5',false)"><div class="opt-letter">D</div> Technological leapfrogging and first mover advantage — Yahoo!'s auction technology was technically inferior to eBay's, and eBay's earlier entry had allowed it to build a vastly more sophisticated matching algorithm for buyers and sellers.</div>
+        </div>
+        <div class="feedback" id="q5-fb">✓ Correct! The textbook uses this story to show that even free isn't enough to beat a dominant network. eBay sellers faced two brutal switching cost problems: (1) Exchange — Yahoo! simply had fewer buyers, so items sold for lower prices. Smart sellers actually bought items on Yahoo! cheap and resold them on eBay at higher prices because eBay's larger user base drove better bids. (2) Reputation — eBay's seller rating system was a form of switching cost. A seller with a 5-star rating built over years of transactions would start at zero on Yahoo!. That reputation loss was worth real money and real protection against scam accusations. Free wasn't enough to overcome either.</div>
+        <div class="feedback wrong-fb" id="q5-wfb">✗ Not quite. The textbook's specific explanation for why eBay held off Yahoo! despite free competition comes down to two concrete factors. First, exchange: Yahoo! had fewer buyers, so the same item sold for lower prices — some arbitrageurs literally bought cheap on Yahoo! and resold at higher prices on eBay. Second, reputation switching costs: a seller's star rating on eBay represented years of trust-building. Moving to Yahoo! meant starting from zero, which was genuinely risky and costly. These two factors — not brand, technology, or complements — are what made eBay's moat unbreachable even when a competitor charged nothing.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer><p>Chapter 3 · Network Effects & Platform Strategy · Study Guide</p></footer>
+</div>
+
+<script>
+  let answered = {q1:false,q2:false,q3:false,q4:false,q5:false};
+  let correctCount = 0;
+
+  function answer(el, qid, isCorrect) {
+    if (answered[qid]) return;
+    answered[qid] = true;
+    const opts = el.closest('.options').querySelectorAll('.option');
+    opts.forEach(o => o.style.pointerEvents = 'none');
+    if (isCorrect) {
+      el.classList.add('correct');
+      correctCount++;
+      document.getElementById(qid+'-fb').style.display = 'block';
+    } else {
+      el.classList.add('wrong');
+      document.getElementById(qid+'-wfb').style.display = 'block';
+      opts.forEach(o => {
+        if (o.getAttribute('onclick') && o.getAttribute('onclick').includes('true')) o.classList.add('correct');
+      });
+    }
+    document.getElementById('score').textContent = correctCount + ' / 5';
+  }
+
+  function resetQuiz() {
+    answered = {q1:false,q2:false,q3:false,q4:false,q5:false};
+    correctCount = 0;
+    document.getElementById('score').textContent = '0 / 5';
+    document.querySelectorAll('.option').forEach(o => {
+      o.classList.remove('correct','wrong');
+      o.style.pointerEvents = '';
+    });
+    document.querySelectorAll('.feedback').forEach(f => f.style.display = 'none');
+  }
+</script>
+</body>
+</html>
