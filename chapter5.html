@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chapter 5 — Zara & Tech-Enabled Strategy</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0d0f1a; --surface: #13162a; --border: #1e2340;
+      --accent: #e8b84b; --accent2: #5b8dee; --text: #e8eaf0;
+      --muted: #7a7f9a; --green: #4cbb8a; --red: #e05c6a;
+    }
+    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background-image: linear-gradient(rgba(91,141,238,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(91,141,238,0.03) 1px, transparent 1px);
+      background-size: 60px 60px; pointer-events: none; z-index: 0;
+    }
+    .wrapper { position: relative; z-index: 1; max-width: 820px; margin: 0 auto; padding: 48px 24px 80px; }
+
+    .back { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); text-decoration: none; font-size: 0.85rem; margin-bottom: 40px; transition: color 0.2s; }
+    .back:hover { color: var(--accent); }
+    .back::before { content: '←'; }
+
+    .ch-label { font-size: 11px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); }
+    h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; margin: 10px 0 6px; line-height: 1.15; }
+    .ch-subtitle { color: var(--muted); font-size: 0.95rem; font-weight: 300; }
+    .divider { width: 50px; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); margin: 24px 0; }
+
+    .section { margin-top: 52px; }
+    .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+    .section-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+    .icon-vocab { background: rgba(232,184,75,0.12); }
+    .icon-concepts { background: rgba(91,141,238,0.12); }
+    .icon-quiz { background: rgba(76,187,138,0.12); }
+    .section-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; }
+
+    .vocab-list { display: flex; flex-direction: column; gap: 12px; }
+    .vocab-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; }
+    .vocab-term { font-weight: 500; font-size: 1rem; color: var(--accent); margin-bottom: 6px; }
+    .vocab-def { font-size: 0.9rem; color: var(--text); line-height: 1.65; }
+    .vocab-cite { font-size: 0.78rem; color: var(--muted); margin-top: 8px; font-style: italic; }
+    .analogy-box { margin-top: 10px; background: rgba(232,184,75,0.06); border-left: 2px solid rgba(232,184,75,0.4); padding: 8px 12px; border-radius: 0 6px 6px 0; font-size: 0.83rem; color: var(--accent); line-height: 1.5; }
+
+    .concept-list { display: flex; flex-direction: column; gap: 12px; }
+    .concept-card { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent2); border-radius: 0 12px 12px 0; padding: 18px 20px; }
+    .concept-title { font-weight: 500; color: var(--accent2); font-size: 0.95rem; margin-bottom: 8px; }
+    .concept-body { font-size: 0.9rem; line-height: 1.7; color: var(--text); }
+    .concept-body b { color: var(--accent); font-weight: 500; }
+
+    /* Zara vs Gap compare grid */
+    .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+    .cmp-tile { border-radius: 10px; padding: 14px 16px; }
+    .cmp-zara { background: rgba(76,187,138,0.07); border: 1px solid rgba(76,187,138,0.2); }
+    .cmp-gap  { background: rgba(224,92,106,0.07); border: 1px solid rgba(224,92,106,0.2); }
+    .cmp-label { font-size: 1rem; font-weight: 700; font-family: 'Playfair Display', serif; margin-bottom: 6px; }
+    .cmp-zara .cmp-label { color: var(--green); }
+    .cmp-gap  .cmp-label  { color: var(--red); }
+    .cmp-body { font-size: 0.8rem; color: var(--muted); line-height: 1.6; }
+
+    /* Value chain steps */
+    .chain-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px,1fr)); gap: 10px; margin-top: 12px; }
+    .chain-tile { background: rgba(91,141,238,0.07); border: 1px solid rgba(91,141,238,0.18); border-radius: 8px; padding: 12px 14px; }
+    .chain-name { font-size: 0.85rem; font-weight: 600; color: var(--accent2); margin-bottom: 4px; }
+    .chain-body { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+
+    /* IS components grid */
+    .is-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 12px; }
+    .is-tile { border-radius: 10px; padding: 12px 10px; text-align: center; }
+    .is-hw   { background: rgba(232,184,75,0.07);  border: 1px solid rgba(232,184,75,0.2); }
+    .is-sw   { background: rgba(91,141,238,0.07);  border: 1px solid rgba(91,141,238,0.2); }
+    .is-data { background: rgba(76,187,138,0.07);  border: 1px solid rgba(76,187,138,0.2); }
+    .is-proc { background: rgba(224,92,106,0.07);  border: 1px solid rgba(224,92,106,0.2); }
+    .is-ppl  { background: rgba(160,100,240,0.07); border: 1px solid rgba(160,100,240,0.2); }
+    .is-icon { font-size: 1.3rem; margin-bottom: 5px; }
+    .is-name { font-size: 0.75rem; font-weight: 600; }
+    .is-hw   .is-name { color: var(--accent); }
+    .is-sw   .is-name { color: var(--accent2); }
+    .is-data .is-name { color: var(--green); }
+    .is-proc .is-name { color: var(--red); }
+    .is-ppl  .is-name { color: #b07aff; }
+    .is-body { font-size: 0.72rem; color: var(--muted); line-height: 1.4; margin-top: 4px; }
+
+    /* Stats bar */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); gap: 10px; margin-top: 12px; }
+    .stat-tile { background: rgba(232,184,75,0.06); border: 1px solid rgba(232,184,75,0.18); border-radius: 8px; padding: 12px 14px; }
+    .stat-num  { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 900; color: var(--accent); }
+    .stat-label { font-size: 0.78rem; color: var(--muted); line-height: 1.4; margin-top: 2px; }
+
+    .quiz-container { display: flex; flex-direction: column; gap: 28px; }
+    .quiz-q { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px 24px 20px; }
+    .q-number { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); margin-bottom: 10px; }
+    .q-text { font-size: 1rem; font-weight: 500; line-height: 1.55; margin-bottom: 18px; }
+    .options { display: flex; flex-direction: column; gap: 8px; }
+    .option { display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 0.88rem; line-height: 1.5; transition: border-color 0.2s, background 0.2s; user-select: none; }
+    .option:hover { border-color: var(--accent2); background: rgba(91,141,238,0.06); }
+    .option.correct { border-color: var(--green) !important; background: rgba(76,187,138,0.1) !important; }
+    .option.wrong   { border-color: var(--red)   !important; background: rgba(224,92,106,0.08) !important; }
+    .opt-letter { min-width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; flex-shrink: 0; margin-top: 1px; }
+    .option.correct .opt-letter { background: var(--green); border-color: var(--green); color: #fff; }
+    .option.wrong   .opt-letter { background: var(--red);   border-color: var(--red);   color: #fff; }
+    .feedback { margin-top: 12px; font-size: 0.83rem; color: var(--green); display: none; line-height: 1.55; padding: 10px 12px; background: rgba(76,187,138,0.06); border-radius: 8px; }
+    .feedback.wrong-fb { color: #f09a6a; background: rgba(224,92,106,0.06); }
+
+    .score-bar { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    .score-text { font-size: 0.95rem; color: var(--muted); }
+    .score-num  { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; color: var(--accent); }
+    .reset-btn  { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 8px 18px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-family: 'DM Sans', sans-serif; transition: border-color 0.2s, color 0.2s; }
+    .reset-btn:hover { border-color: var(--accent); color: var(--accent); }
+    footer { text-align: center; margin-top: 64px; color: var(--muted); font-size: 0.8rem; }
+
+    @media (max-width: 560px) {
+      .compare-grid { grid-template-columns: 1fr; }
+      .is-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+  <a href="index.html" class="back">Back to all chapters</a>
+
+  <div class="ch-label">Chapter 05</div>
+  <h1>Zara & Tech-Enabled Strategy</h1>
+  <p class="ch-subtitle">How a Spanish clothing shop used data, speed, and vertical integration to become the world's largest fashion retailer</p>
+  <div class="divider"></div>
+
+  <!-- VOCAB -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-vocab">📖</div>
+      <div class="section-title">Vocabulary</div>
+    </div>
+    <div class="vocab-list">
+
+      <div class="vocab-card">
+        <div class="vocab-term">Vertical Integration</div>
+        <div class="vocab-def">When a single firm owns several layers in its value chain — from raw materials and manufacturing to distribution and retail. Zara produces nearly 60% of its merchandise in-house, makes 40% of its own fabric, and owns its dye subsidiary. This is the opposite of Gap's model, which outsources manufacturing entirely to contract factories. Vertical integration gives Zara control over speed, quality, and responsiveness that no outsourced supply chain can match — but it also means higher fixed costs and less flexibility to shift production geographically.</div>
+        <div class="analogy-box">🧠 Analogy: A restaurant that grows its own vegetables, cooks everything from scratch, and owns the delivery trucks is vertically integrated. A restaurant that orders pre-made meals from a supplier and has DoorDash deliver them is not. The vertically integrated one is slower to change its menu but has total control over quality, timing, and freshness — exactly the trade-off Zara makes.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 5</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Value Chain</div>
+        <div class="vocab-def">The full set of activities through which a product or service is created and delivered to customers. For Zara, the value chain runs from customer data collection → design → fabric sourcing → manufacturing → logistics → store display → sale. What makes Zara's value chain strategic is that every link in it is optimized and integrated — data flows from stores back to designers in real time, manufacturing responds to actual demand signals rather than season forecasts, and logistics moves product from factory floor to store rack in under 72 hours. Rivals can copy individual parts of the chain but can't replicate the whole integrated system without rebuilding from scratch.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 5; Porter</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Just-in-Time (JIT) Manufacturing</div>
+        <div class="vocab-def">A production philosophy where goods are manufactured only when needed — in response to actual demand signals rather than forecasts. Zara's JIT approach means that most items on store shelves didn't exist three weeks earlier, not even as sketches. Items arrive at stores twice a week in precisely the quantities and sizes each specific location needs. This eliminates the massive inventory overhang that kills rivals' margins: instead of making 100,000 units of a season's bet hoping customers will buy, Zara makes small initial runs, reads the data, and responds quickly with more of what's selling and less of what isn't.</div>
+        <div class="analogy-box">🧠 Analogy: Traditional fashion is like a restaurant printing the whole year's menu in January, ordering all the ingredients upfront, and hoping customers still want those dishes in December. Zara is like a restaurant that prints a new menu every two weeks based on what diners ordered last week — and only orders what it needs for those dishes.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 5</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Contract Manufacturing</div>
+        <div class="vocab-def">Outsourcing production to third-party firms that don't own the plants or employ workers directly on behalf of the brand. The conventional wisdom in fashion is to use cheap contract manufacturers in developing countries to lower costs. Gap, H&M, and most major retailers do this. The downside: lead times of months, loss of quality control, exposure to sweatshop labor scandals, and vulnerability to geopolitical disruption. When the Bangladesh Rana Plaza factory collapse killed 1,100 workers in 2013, firms using those contractors — including Walmart and Benetton — faced severe brand damage. Zara uses contract manufacturers only for staple items (T-shirts, basic jeans) with longer shelf lives, not for trend-sensitive fast-fashion items.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 5</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Point-of-Sale (POS) System</div>
+        <div class="vocab-def">A transaction processing system that captures customer purchases at checkout — the cash register plus inventory management. When a Zara item is sold, the POS immediately decrements inventory and transmits the sale data back to headquarters. Every retailer has a POS system. What separates Zara is that POS data is only the beginning — it tells the firm what sold. Staff using mobile devices collect the additional layer of data: what customers wanted but couldn't find, what they tried on but didn't buy, and why. POS tells you the score; the staff qualitative data tells you what play to run next.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 5</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">RFID (Radio Frequency Identification)</div>
+        <div class="vocab-def">Small chip-based tags that wirelessly emit a unique identifying code for the item they're attached to — think of RFID as a next-generation bar code that doesn't require line-of-sight scanning. Zara builds RFID directly into its security tags, allowing distribution centers and stores to track every item's exact location. A customer asks for a blue dress in size 10? Staff can instantly see if it's in-store, at a nearby location, or available to order online — without a physical inventory search. Zara's RFID rollout succeeded where Walmart and JCPenney struggled because Zara's vertical integration means all products flow through just two warehouses before reaching stores, allowing uniform tagging before items ever enter retail.</div>
+        <div class="analogy-box">🧠 Analogy: Bar codes are like name tags — you have to hold them up to a reader to find out who someone is. RFID is like a Bluetooth signal — every tagged item is constantly broadcasting its identity and location to any nearby reader. This lets Zara take a complete inventory count 4x faster than before RFID, with one-fourth the staff.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 5</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Omnichannel Strategy</div>
+        <div class="vocab-def">An approach to retail that offers consumers an integrated and seamless set of shopping, buying, and return experiences across all channels — physical store, website, app, and phone. Zara's omnichannel model is so fluid that the firm doesn't even separate online and offline sales in its reporting. Two-thirds of online returns happen in-store; one-third of online orders are picked up in-store. RFID-powered inventory visibility means a store employee can rescue a lost sale by instantly locating the right size at a nearby store or on Zara.com. During COVID, this integration allowed Zara to reroute inventory from closed stores to fulfill e-commerce orders — a move that would have been impossible without RFID-level inventory visibility.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 5</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Information System (IS)</div>
+        <div class="vocab-def">An integrated solution that combines five components: hardware, software, data, procedures, and the people who interact with and are impacted by the system. This is distinct from information technology (IT), which is just the hardware and software. The Prada flagship disaster illustrates the difference perfectly: Prada deployed technically sophisticated IT (RFID dressing rooms, PDAs, smart mirrors) but failed to design the full IS — the procedures were confusing, the staff didn't use the tools, customers couldn't operate the interfaces, and the ROI was catastrophically negative. Managers must think in terms of systems, not just gadgets.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 5</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Greige Goods</div>
+        <div class="vocab-def">Partially finished fabric or garments (pronounced "gray") that haven't been fully processed, dyed, or customized yet. Zara keeps roughly half its cloth in undyed greige form, allowing the firm to respond to mid-season shifts in color trends without waste. If yellow suddenly becomes hot mid-season and purple is cooling, Zara can redirect undyed greige goods to yellow rather than being stuck with bolts of pre-dyed purple fabric. This optionality is a strategic hedge against fashion risk — and it's only possible because Zara owns its own dye subsidiary and controls its manufacturing process end to end.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 5</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Return on Investment (ROI)</div>
+        <div class="vocab-def">The amount earned from an expenditure — the financial return generated relative to the cost of an investment. Before deploying technology, managers must forecast ROI: what will we get for our money, and how long until we break even? Prada's Manhattan flagship tech installation was estimated to need three times the actual sales volume it generated to justify its costs. Zara, by contrast, spends less than one-fourth the fashion industry average on IT as a percentage of revenue — yet earns dramatically more from that technology because every dollar is targeted at the highest-impact points in the value chain (distribution, inventory tracking, store replenishment) rather than splashed on fashionable-seeming gadgetry.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 5</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- KEY CONCEPTS -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-concepts">💡</div>
+      <div class="section-title">Key Concepts</div>
+    </div>
+    <div class="concept-list">
+
+      <div class="concept-card">
+        <div class="concept-title">Zara vs. the Conventional Fashion Model — Everything Is Backwards</div>
+        <div class="concept-body">Zara's entire strategy is counterintuitive. Every "rule" of the fashion industry, Zara breaks on purpose.
+        <div class="compare-grid">
+          <div class="cmp-tile cmp-zara">
+            <div class="cmp-label">✅ Zara's Model</div>
+            <div class="cmp-body">Design follows customer data — store managers ask shoppers directly what they want. 300 designers produce 30,000 items/year. Concept to shelf in <b>15 days</b>. Manufactures ~60% in-house, near Spain. Spends 0.3% of revenue on advertising. Limited runs create scarcity and urgency. 85% of items sold at full price. Gross margin: ~60%.</div>
+          </div>
+          <div class="cmp-tile cmp-gap">
+            <div class="cmp-label">❌ Conventional Model (Gap)</div>
+            <div class="cmp-body">Design based on executive taste and trend forecasts months before the season. 2,000–4,000 items/season. Concept to shelf: <b>6–12 months</b>. Fully outsourced to distant contract manufacturers. Spends 4%+ on advertising. Mass production means constant markdowns. Less than 1% of JCPenney items bought at full price. Gross margin: ~39% at Gap.</div>
+          </div>
+        </div>
+        <br/>The result: Gap's same-store sales declined for <b>29 consecutive months</b>. Its debt was downgraded to junk status. A Gap executive admitted, "I would love to organize our business like Inditex, but I would have to knock the company down and rebuild it from scratch." That statement is exactly the point — Zara's value chain is an <b>imitation-resistant system</b>, not a collection of copyable features.
+        </div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-title">Zara's Data-Driven Value Chain — How the Loop Works</div>
+        <div class="concept-body">Zara's competitive advantage isn't any single technology or practice — it's the full feedback loop where every stage feeds the next.
+        <div class="chain-grid">
+          <div class="chain-tile">
+            <div class="chain-name">1. 📱 Customer Intel</div>
+            <div class="chain-body">Store staff use iPads to capture what customers want but can't find. After closing, staff analyze tried-on-but-not-bought items. POS records what sold. Up to 70% of salaries tied to store performance — so data accuracy matters to staff personally.</div>
+          </div>
+          <div class="chain-tile">
+            <div class="chain-name">2. 🎨 Rapid Design</div>
+            <div class="chain-body">Data goes to "The Cube" headquarters. 300 designers produce 30,000 items/year. No star designers — teams share credit, rotate roles, get feedback from managers. Designs respond to customer signals, not runway trends.</div>
+          </div>
+          <div class="chain-tile">
+            <div class="chain-name">3. 🏭 Vertical Mfg.</div>
+            <div class="chain-body">23 robotic factories cut and dye fabric. Greige (undyed) stock allows mid-season color pivots. Network of local cooperatives handles stitching. Most trendy items made near Spain — speed beats cheap labor cost.</div>
+          </div>
+          <div class="chain-tile">
+            <div class="chain-name">4. 🏗️ Distribution</div>
+            <div class="chain-body">5M sq-ft La Coruña warehouse — 90 football fields. 17M items moved weekly; nothing stays more than 72 hours. Clothes arrive pre-ironed on hangers with security and price tags attached. Staff just move box to rack.</div>
+          </div>
+          <div class="chain-tile">
+            <div class="chain-name">5. 🏷️ RFID Tracking</div>
+            <div class="chain-body">Every item tagged. Staff can locate any item across all stores instantly. Tags reused to cut cost. Inventory counted 4x more often than pre-RFID, with 1/4 the staff. Tag reuse pays back because Zara moves hundreds of millions of items annually.</div>
+          </div>
+          <div class="chain-tile">
+            <div class="chain-name">6. 🛍️ Store Strategy</div>
+            <div class="chain-body">Limited runs = scarcity = full-price sales. Each store tailored to local tastes. Customers visit 17x/year vs. 3x at rivals. "Z-days" (twice-weekly deliveries) drive repeat traffic. Stores display-tested at "Fashion Street" in headquarters basement.</div>
+          </div>
+        </div>
+        </div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-title">The Numbers That Prove the Model Works</div>
+        <div class="concept-body">These statistics directly illustrate why Zara's approach beats the fashion industry playbook on every measurable dimension.
+        <div class="stats-grid">
+          <div class="stat-tile">
+            <div class="stat-num">15</div>
+            <div class="stat-label">Days from concept to store shelf at Zara. H&M takes 3–5 months. Gap takes 6+ months.</div>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-num">17×</div>
+            <div class="stat-label">Average Zara customer store visits per year. Rivals average just 3 visits annually.</div>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-num">85%</div>
+            <div class="stat-label">Of Zara items sold at full price. Industry average markdown rate: 50–70%. JCPenney full-price rate: &lt;1%.</div>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-num">1%</div>
+            <div class="stat-label">Failed product introductions at Zara. Industry average: 10%. Less waste, less risk, fewer costly mistakes.</div>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-num">~60%</div>
+            <div class="stat-label">Inditex gross margin vs. ~39% at Gap — despite Zara having higher per-unit manufacturing costs.</div>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-num">0.3%</div>
+            <div class="stat-label">Ad spend as % of revenue at Inditex. H&M spends 4%. Zara's founder called advertising "a pointless distraction."</div>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-num">&lt;¼</div>
+            <div class="stat-label">Zara's IT spend vs. industry average — yet it generates more value per tech dollar than any rival.</div>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-num">72 hrs</div>
+            <div class="stat-label">Maximum time any item spends in Zara's distribution center before shipping to stores worldwide.</div>
+          </div>
+        </div>
+        </div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-title">Technology ≠ Information Systems — The Prada Lesson</div>
+        <div class="concept-body">Prada's flagship Manhattan store became one of the most cited examples in MIS of how to deploy technology wrong. The contrast with Zara is the point of the whole chapter.<br/><br/>
+        <b>What Prada tried:</b> Architect Rem Koolhaas designed a "tech showcase" store. RFID on all garments. Glass dressing rooms that customers could turn opaque with foot pedals. Displays showing front and back views simultaneously. PDAs for staff to check inventory. Recommendations triggered by which items you brought into the fitting room.<br/><br/>
+        <b>What actually happened:</b> Customers couldn't figure out the foot pedals. Fashion shoppers accidentally disrobed in full view when the walls didn't go opaque. Others got trapped inside when pedals failed. The inventory database regularly reported items out of stock when they weren't. Staff "put [PDAs] away so tourists don't play with them." The store took in about one-third the sales needed to justify its tech investment.<br/><br/>
+        <b>Why Zara's RFID worked and Prada's didn't:</b> An Information System is five components — hardware, software, <b>data, procedures, and people</b>. Prada had hardware and software. It failed on procedures (no one could use the foot pedals), people (staff abandoned the PDAs), and data (inaccurate inventory). Zara targeted RFID at a specific operational problem (inventory tracking), had a clear ROI case, tested it through a centralized supply chain it controls entirely, and trained staff to use it as a daily tool — not a showpiece.<br/><br/>
+        The lesson: <b>Don't deploy tech because it looks impressive. Deploy tech where it solves a specific problem in the value chain with a measurable return.</b>
+        <div class="is-grid" style="margin-top:14px;">
+          <div class="is-tile is-hw">
+            <div class="is-icon">🖥️</div>
+            <div class="is-name">Hardware</div>
+            <div class="is-body">Physical devices: servers, iPads, RFID scanners, POS terminals</div>
+          </div>
+          <div class="is-tile is-sw">
+            <div class="is-icon">💻</div>
+            <div class="is-name">Software</div>
+            <div class="is-body">Apps, inventory systems, design tools, ordering platforms</div>
+          </div>
+          <div class="is-tile is-data">
+            <div class="is-icon">📊</div>
+            <div class="is-name">Data</div>
+            <div class="is-body">Sales records, customer preferences, inventory counts, size/color demand signals</div>
+          </div>
+          <div class="is-tile is-proc">
+            <div class="is-icon">📋</div>
+            <div class="is-name">Procedures</div>
+            <div class="is-body">Workflows, staff routines, data entry protocols, how each step gets done</div>
+          </div>
+          <div class="is-tile is-ppl">
+            <div class="is-icon">👥</div>
+            <div class="is-name">People</div>
+            <div class="is-body">Designers, store managers, warehouse workers, data analysts — everyone who touches the system</div>
+          </div>
+        </div>
+        </div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-title">Contract Manufacturing & Ethics — Why Cheap Supply Chains Carry Real Risk</div>
+        <div class="concept-body">The textbook uses Zara's chapter to make an ethics point that matters for any manager sourcing globally: <b>your supply chain's conduct is your brand's conduct.</b><br/><br/>
+        <b>The conventional wisdom:</b> Outsource manufacturing to low-cost countries — lower costs, higher margins. Most fashion giants do this. H&M has 900 suppliers and owns zero factories.<br/><br/>
+        <b>The downside:</b> Race-to-the-bottom cost pressure leads to sweatshop labor, unsafe conditions, and environmental abuse. The 2013 Bangladesh Rana Plaza collapse killed 1,100 workers in an illegally constructed factory serving global apparel brands. Gap was singled out as a protest target because it refused to sign a safety accord that H&M and Zara endorsed — and Gap was one of Bangladesh's largest importers.<br/><br/>
+        <b>The Fair Factories Clearinghouse:</b> Reebok (now part of Authentic Brands) built an internal audit system to track the ethics of its hundreds of suppliers. Rather than keep it proprietary, Reebok donated the system to create the nonprofit Fair Factories Clearinghouse — a shared database where competing brands pool supplier audit data. As more firms join and contribute, the database becomes more valuable (a classic data network effect from Chapter 3). A supplier caught with bad practices faces a permanent record visible to all members, incentivizing compliance.<br/><br/>
+        <b>The manager's takeaway:</b> A firm's legal and ethical exposure doesn't end at its own employees. Every supplier and partner is a potential liability. Technology can help — but it only works if the data is honest and the system has broad enough adoption to create real accountability.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-quiz">🎯</div>
+      <div class="section-title">Practice Quiz</div>
+    </div>
+
+    <div class="score-bar" style="margin-bottom:24px;">
+      <div>
+        <div class="score-text">Your score</div>
+        <div class="score-num" id="score">0 / 5</div>
+      </div>
+      <button class="reset-btn" onclick="resetQuiz()">Reset Quiz</button>
+    </div>
+
+    <div class="quiz-container">
+
+      <!-- Q1: correct = D -->
+      <div class="quiz-q" id="q1">
+        <div class="q-number">Question 1</div>
+        <div class="q-text">H&M reported $4.3 billion in unsold inventory. Gap's same-store sales declined for 29 consecutive months. Burberry and Nike destroyed excess inventory rather than discount it. Yet Zara has a failed product rate of just 1% (vs. 10% industry average) and sells 85% of items at full price. Which specific element of Zara's model most directly explains this difference in inventory performance?</div>
+        <div class="options">
+          <div class="option" onclick="answer(this,'q1',false)"><div class="opt-letter">A</div> Zara's advertising strategy — by spending almost nothing on ads (0.3% vs. H&M's 4%), Zara avoids creating demand expectations that its inventory can't meet, preventing the mismatch between promoted styles and what customers actually want.</div>
+          <div class="option" onclick="answer(this,'q1',false)"><div class="opt-letter">B</div> Zara's RFID system — real-time inventory tracking allows the firm to instantly identify which items are sitting unsold and pull them from stores before they require markdowns, while quickly replenishing items that are moving.</div>
+          <div class="option" onclick="answer(this,'q1',false)"><div class="opt-letter">C</div> Zara's vertical integration — by owning its factories, Zara can halt production of unpopular items the moment sales data signals weak demand, while rivals are locked into contracts with third-party manufacturers who have already cut the fabric.</div>
+          <div class="option" onclick="answer(this,'q1',true)"><div class="opt-letter">D</div> Zara designs based on real customer demand data gathered in stores — staff actively ask shoppers what they want, record unsold tried-on items, and feed POS data back to designers, so new items reflect proven demand rather than executive forecasts made months in advance.</div>
+        </div>
+        <div class="feedback" id="q1-fb">✓ Correct! The textbook's core argument is that Zara's inventory advantage begins with data, not operations. Gap's inventory problems started upstream — executives guessed what customers would want six months in advance and were wrong. Zara eliminates this guesswork by having store staff actively collect customer preference data, recording what people ask for but can't find, what they try on but don't buy, and what the POS says is actually selling. That data goes directly to 300 designers who produce items based on proven demand, not trend predictions. RFID and vertical integration help execute the strategy, but the insight starts with knowing what customers want before committing to production.</div>
+        <div class="feedback wrong-fb" id="q1-wfb">✗ Not quite. While RFID, vertical integration, and advertising strategy all play supporting roles, the textbook's primary explanation for Zara's inventory superiority starts with data collection at the store level. Gap's failure wasn't a distribution or tracking problem — it was a demand-sensing problem. Executives guessed what customers would want months in advance and guessed wrong, producing inventory nobody wanted. Zara solves this upstream: staff ask customers directly what they want, track what gets tried on but not bought, and relay real-time sales data back to designers. The result is that items are designed to sell, not designed to hope.</div>
+      </div>
+
+      <!-- Q2: correct = B -->
+      <div class="quiz-q" id="q2">
+        <div class="q-number">Question 2</div>
+        <div class="q-text">Zara has higher per-unit manufacturing costs than Gap, H&M, and most fashion rivals — because it keeps production near Spain rather than outsourcing to cheaper factories in Asia or Bangladesh. Yet Inditex gross margins (~60%) dwarf Gap's (~39%). How can Zara have higher manufacturing costs AND higher margins simultaneously?</div>
+        <div class="options">
+          <div class="option" onclick="answer(this,'q2',false)"><div class="opt-letter">A</div> Zara charges premium prices — its "Armani at moderate prices" positioning allows it to price items significantly above Gap and H&M, more than offsetting the higher cost of European manufacturing.</div>
+          <div class="option" onclick="answer(this,'q2',true)"><div class="opt-letter">B</div> Speed and limited runs allow Zara to sell 85% of items at full price with almost no markdowns or write-offs, while rivals discount 50–70% of inventory and absorb massive write-offs on unsold stock — the savings from eliminating markdowns more than offset the higher production cost.</div>
+          <div class="option" onclick="answer(this,'q2',false)"><div class="opt-letter">C</div> Zara's zero-advertising strategy saves so much money (rivals spend 4% of revenue on ads) that the marketing savings fully fund the more expensive near-shore manufacturing, with enough left over to produce superior margins.</div>
+          <div class="option" onclick="answer(this,'q2',false)"><div class="opt-letter">D</div> Zara's RFID system reduces theft and inventory shrinkage so dramatically that the recovered revenue compensates for higher manufacturing costs — a benefit Gap and H&M don't enjoy because they lack Zara's integrated tagging infrastructure.</div>
+        </div>
+        <div class="feedback" id="q2-fb">✓ Correct! This is the core financial logic of the Zara model. The conventional view is that manufacturing cost is the main driver of retail margins. Zara proves that markdown rate matters more. Gap's cheap manufacturing costs are largely eaten alive by the 50–70% discounts required to clear excess inventory, plus write-offs on items that never sell at any price. Less than 1% of JCPenney items were bought at full price. Zara's higher manufacturing cost is more than offset by selling 85% of items at full price with almost no write-offs. Add to this the "frozen money" saved by not having a back room full of unsold inventory (that capital can be redeployed), and Zara consistently wins on margins despite losing on manufacturing cost.</div>
+        <div class="feedback wrong-fb" id="q2-wfb">✗ Not quite. The textbook's financial argument is specifically about markdown rates, not pricing premiums or ad savings. Zara isn't dramatically more expensive than Gap — it's positioned as "Armani at moderate prices," not as a luxury brand. The margin advantage comes from selling 85% of items at full price vs. rivals' 50–70% markdown rates. When Gap prices everything at full price and then discounts 60% of inventory anyway, the effective realized price is much lower than the sticker price. Zara's higher per-unit manufacturing cost is irrelevant when it almost never has to discount. The saved revenue from eliminated markdowns more than covers the extra cost of keeping production in Europe.</div>
+      </div>
+
+      <!-- Q3: correct = A -->
+      <div class="quiz-q" id="q3">
+        <div class="q-number">Question 3</div>
+        <div class="q-text">Prada deployed sophisticated RFID technology in its Manhattan flagship store — the same core technology Zara uses throughout its operations. Prada's rollout was a disaster: customers were confused, staff abandoned the tools, and the store took in one-third the revenue needed to justify its investment. Zara's RFID rollout is considered a model success. What explains why the same technology succeeded in one company and failed in the other?</div>
+        <div class="options">
+          <div class="option" onclick="answer(this,'q3',true)"><div class="opt-letter">A</div> Zara deployed RFID as part of a complete information system — targeting a specific operational problem (inventory tracking), designing procedures staff actually use, ensuring data accuracy through a centralized supply chain, and calculating a clear ROI. Prada deployed the technology as a design statement without addressing the full system: procedures failed, staff didn't use it, and the data was unreliable.</div>
+          <div class="option" onclick="answer(this,'q3',false)"><div class="opt-letter">B</div> Zara had a cost advantage — because it buys RFID tags in extreme volume (consuming 1 in 6 tags the entire apparel industry produced in its launch year), Zara's per-tag cost is low enough to make the ROI positive, while Prada's lower volume made the same technology economically unviable.</div>
+          <div class="option" onclick="answer(this,'q3',false)"><div class="opt-letter">C</div> Zara's technology is used in back-of-house logistics where customers never interact with it directly, while Prada put customers in the position of operating complex tech interfaces — the customer-facing nature of Prada's implementation introduced user experience failures that a supply chain application would never encounter.</div>
+          <div class="option" onclick="answer(this,'q3',false)"><div class="opt-letter">D</div> Zara gradually rolled out RFID across hundreds of stores before full deployment, allowing it to identify and fix problems before they became visible to customers, while Prada launched directly in its highest-profile flagship location without adequate testing.</div>
+        </div>
+        <div class="feedback" id="q3-fb">✓ Correct! The textbook uses the Prada contrast to make a foundational MIS concept stick: technology (IT) is not the same as an information system (IS). An IS has five components — hardware, software, data, procedures, and people. Prada had hardware and software. It failed completely on the other three: procedures (foot pedals nobody could use), people (staff who hid the PDAs), and data (inventory database that was routinely wrong). Zara targets RFID at a specific value chain problem it already understood deeply, designs the full system around how real warehouse and store workers operate, ensures data quality through centralized control of the supply chain, and measures ROI before committing. Technology is only as good as the system around it.</div>
+        <div class="feedback wrong-fb" id="q3-wfb">✗ Not quite. While volume pricing, customer-facing vs. back-end deployment, and phased rollout are all reasonable observations, the textbook's specific lesson is about IT vs. IS. Prada failed not because the technology was wrong but because it deployed hardware and software without designing the full information system — the procedures, the people training, and the data quality. Staff who don't use tools and customers who can't operate interfaces represent IS failures, not technology failures. Zara's success with RFID comes from treating it as part of a complete operational system with clear purpose, trained users, accurate data, and a measurable return — not from volume or phasing.</div>
+      </div>
+
+      <!-- Q4: correct = C -->
+      <div class="quiz-q" id="q4">
+        <div class="q-number">Question 4</div>
+        <div class="q-text">During COVID-19, 88% of Zara's stores were forced to close during spring 2020. Rival H&M's losses were estimated at four times Inditex's losses. Primark, which had no online presence, reported COVID store closures cost it $1.4 billion. A Bloomberg headline declared "Zara Owner Built a Post-Covid Retailer Before Virus Came Along." Which specific operational capability allowed Inditex to limit its losses while rivals suffered far worse?</div>
+        <div class="options">
+          <div class="option" onclick="answer(this,'q4',false)"><div class="opt-letter">A</div> Zara's near-shore manufacturing — because most Zara production happens in Spain and Portugal rather than distant Asian factories, the firm could continue receiving new inventory even as global shipping was disrupted, while rivals faced empty shelves due to supply chain breakdowns.</div>
+          <div class="option" onclick="answer(this,'q4',false)"><div class="opt-letter">B</div> Zara's limited-run strategy — because Zara intentionally keeps inventory levels low in every store, it had far less trapped inventory in closed physical locations than rivals who maintained large stockrooms to prevent stockouts.</div>
+          <div class="option" onclick="answer(this,'q4',true)"><div class="opt-letter">C</div> RFID-powered omnichannel inventory visibility — Zara could instantly identify and reroute inventory sitting in closed stores to fulfill the 95% surge in e-commerce orders, converting stranded physical stock into online sales. Without RFID showing exactly where every item was, this reallocation would have been impossible at scale.</div>
+          <div class="option" onclick="answer(this,'q4',false)"><div class="opt-letter">D</div> Zara's zero-advertising model — because Inditex was spending almost nothing on advertising even before COVID, it had significant budget reserves it could rapidly redirect toward building out e-commerce fulfillment capacity during the crisis while rivals had to cut marketing budgets at the worst possible time.</div>
+        </div>
+        <div class="feedback" id="q4-fb">✓ Correct! The textbook quotes an Inditex executive directly: "We adapted so well to the online world because it was all natural. Without RFID, it wouldn't have been possible." When stores closed, Zara had two options rivals didn't: (1) it could instantly see exactly which items were sitting where across all its closed stores, and (2) it could mobilize staff to pull that inventory and redirect it to e-commerce fulfillment. Without RFID's item-level visibility, finding and reallocating inventory from 88% of your stores would take weeks of manual counting. With RFID, Zara's e-commerce shot up 95% in April 2020 and 50% for the quarter — while Primark, which had zero e-commerce, just burned $1.4 billion sitting on closed inventory it couldn't sell through any channel.</div>
+        <div class="feedback wrong-fb" id="q4-wfb">✗ Not quite. Near-shore manufacturing, limited inventory, and ad savings are all real Zara advantages — but none of them specifically enabled the COVID pivot. The textbook's COVID story is about the RFID-powered omnichannel system. When stores closed, Zara needed to find existing inventory and redirect it to online fulfillment instantly. That's only possible if you know exactly where every item is at all times — which RFID provides. The Inditex executive explicitly credited RFID: "Without RFID, it wouldn't have been possible." That's the operational capability that separated Zara from H&M (4x worse losses) and Primark ($1.4B in losses with zero online presence).</div>
+      </div>
+
+      <!-- Q5: correct = B -->
+      <div class="quiz-q" id="q5">
+        <div class="q-number">Question 5</div>
+        <div class="q-text">Reebok (now part of Authentic Brands) spent millions developing an internal audit system to track the ethical practices of its hundreds of contract manufacturers — then donated the system to the nonprofit Fair Factories Clearinghouse, making it available to the entire industry including competitors. From a strategic resources perspective (think Chapter 2's VRIN framework), why would Reebok give away something it spent millions to build?</div>
+        <div class="options">
+          <div class="option" onclick="answer(this,'q5',false)"><div class="opt-letter">A</div> Reebok donated the system because it couldn't maintain it competitively — the cost of keeping supplier audit data current across hundreds of global factories was so high that sharing the burden with the entire industry made financial sense even if it meant giving up a proprietary advantage.</div>
+          <div class="option" onclick="answer(this,'q5',true)"><div class="opt-letter">B</div> The system's value increases as more firms join and contribute data — a classic network effect. A database with audit records from Reebok's 200 suppliers is far less valuable than one with data from every major apparel brand's thousands of suppliers. Reebok gains more from a comprehensive industry database than from keeping a thin proprietary one, and sharing doesn't hurt Reebok competitively since all rivals face the same supply chain ethics risks.</div>
+          <div class="option" onclick="answer(this,'q5',false)"><div class="opt-letter">C</div> Reebok donated the system to create goodwill with regulators and avoid the Department of Justice concerns about data sharing — by making the system nonprofit and publicly available, Reebok prevented any appearance that the database was being used to coordinate prices or reduce competition among apparel buyers.</div>
+          <div class="option" onclick="answer(this,'q5',false)"><div class="opt-letter">D</div> The Fair Factories data wasn't a strategic asset for Reebok because supplier ethics information is easily observable — any competitor could audit the same factories and create the same database, so the VRIN test fails on rarity and the system had no defensible competitive value worth protecting.</div>
+        </div>
+        <div class="feedback" id="q5-fb">✓ Correct! This connects directly to Chapter 3's network effects concept applied to data. A proprietary database with only Reebok's suppliers is valuable but limited. A shared database with every major fashion brand's supplier audits is exponentially more valuable — more suppliers covered, more data points per supplier, faster identification of bad actors, and universal deterrent effect on unethical factories. Reebok captures the network effect benefits (comprehensive data) while giving up only a narrow proprietary advantage (exclusive access to its own data). Since every brand faces the same supply chain ethics risk, sharing this data doesn't help competitors beat Reebok — it helps the entire industry raise the floor of acceptable practices. Reebok essentially seeded a two-sided network and gained more value from the resulting ecosystem than it would have from a proprietary database.</div>
+        <div class="feedback wrong-fb" id="q5-wfb">✗ Not quite. While DOJ concerns and cost-sharing are mentioned in the textbook, the core strategic reason Reebok donated the system is network effects applied to data. The value of the audit database isn't in any individual firm's supplier records — it's in the comprehensiveness across all firms. One company's 200-supplier database helps that company. An industry-wide database covering thousands of suppliers helps everyone, including Reebok, far more than keeping proprietary data ever could. This is the same principle as Bluetooth and Wi-Fi consortia from Chapter 3: sometimes sharing a standard creates more value for all participants than any one firm could capture alone with a proprietary version.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer><p>Chapter 5 · Zara & Tech-Enabled Strategy · Study Guide</p></footer>
+</div>
+
+<script>
+  let answered = {q1:false,q2:false,q3:false,q4:false,q5:false};
+  let correctCount = 0;
+
+  function answer(el, qid, isCorrect) {
+    if (answered[qid]) return;
+    answered[qid] = true;
+    const opts = el.closest('.options').querySelectorAll('.option');
+    opts.forEach(o => o.style.pointerEvents = 'none');
+    if (isCorrect) {
+      el.classList.add('correct');
+      correctCount++;
+      document.getElementById(qid+'-fb').style.display = 'block';
+    } else {
+      el.classList.add('wrong');
+      document.getElementById(qid+'-wfb').style.display = 'block';
+      opts.forEach(o => {
+        if (o.getAttribute('onclick') && o.getAttribute('onclick').includes('true')) o.classList.add('correct');
+      });
+    }
+    document.getElementById('score').textContent = correctCount + ' / 5';
+  }
+
+  function resetQuiz() {
+    answered = {q1:false,q2:false,q3:false,q4:false,q5:false};
+    correctCount = 0;
+    document.getElementById('score').textContent = '0 / 5';
+    document.querySelectorAll('.option').forEach(o => {
+      o.classList.remove('correct','wrong');
+      o.style.pointerEvents = '';
+    });
+    document.querySelectorAll('.feedback').forEach(f => f.style.display = 'none');
+  }
+</script>
+</body>
+</html>
