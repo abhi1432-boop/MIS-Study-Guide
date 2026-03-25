@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chapter 4 — Disruptive Innovation & Netflix</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0d0f1a; --surface: #13162a; --border: #1e2340;
+      --accent: #e8b84b; --accent2: #5b8dee; --text: #e8eaf0;
+      --muted: #7a7f9a; --green: #4cbb8a; --red: #e05c6a;
+    }
+    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background-image: linear-gradient(rgba(91,141,238,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(91,141,238,0.03) 1px, transparent 1px);
+      background-size: 60px 60px; pointer-events: none; z-index: 0;
+    }
+    .wrapper { position: relative; z-index: 1; max-width: 820px; margin: 0 auto; padding: 48px 24px 80px; }
+
+    .back { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); text-decoration: none; font-size: 0.85rem; margin-bottom: 40px; transition: color 0.2s; }
+    .back:hover { color: var(--accent); }
+    .back::before { content: '←'; }
+
+    .ch-label { font-size: 11px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); }
+    h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; margin: 10px 0 6px; line-height: 1.15; }
+    .ch-subtitle { color: var(--muted); font-size: 0.95rem; font-weight: 300; }
+    .divider { width: 50px; height: 2px; background: linear-gradient(90deg, var(--accent), transparent); margin: 24px 0; }
+
+    .section { margin-top: 52px; }
+    .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+    .section-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+    .icon-vocab { background: rgba(232,184,75,0.12); }
+    .icon-concepts { background: rgba(91,141,238,0.12); }
+    .icon-quiz { background: rgba(76,187,138,0.12); }
+    .section-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; }
+
+    .vocab-list { display: flex; flex-direction: column; gap: 12px; }
+    .vocab-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; }
+    .vocab-term { font-weight: 500; font-size: 1rem; color: var(--accent); margin-bottom: 6px; }
+    .vocab-def { font-size: 0.9rem; color: var(--text); line-height: 1.65; }
+    .vocab-cite { font-size: 0.78rem; color: var(--muted); margin-top: 8px; font-style: italic; }
+    .analogy-box { margin-top: 10px; background: rgba(232,184,75,0.06); border-left: 2px solid rgba(232,184,75,0.4); padding: 8px 12px; border-radius: 0 6px 6px 0; font-size: 0.83rem; color: var(--accent); line-height: 1.5; }
+
+    .concept-list { display: flex; flex-direction: column; gap: 12px; }
+    .concept-card { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent2); border-radius: 0 12px 12px 0; padding: 18px 20px; }
+    .concept-title { font-weight: 500; color: var(--accent2); font-size: 0.95rem; margin-bottom: 8px; }
+    .concept-body { font-size: 0.9rem; line-height: 1.7; color: var(--text); }
+    .concept-body b { color: var(--accent); font-weight: 500; }
+
+    /* Disruption curve diagram */
+    .disruption-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+    .dis-tile { border-radius: 10px; padding: 14px 16px; }
+    .dis-incumbent { background: rgba(232,184,75,0.07); border: 1px solid rgba(232,184,75,0.2); }
+    .dis-disruptor { background: rgba(91,141,238,0.07); border: 1px solid rgba(91,141,238,0.2); }
+    .dis-label { font-size: 1rem; font-weight: 700; font-family: 'Playfair Display', serif; margin-bottom: 4px; }
+    .dis-incumbent .dis-label { color: var(--accent); }
+    .dis-disruptor .dis-label { color: var(--accent2); }
+    .dis-body { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+
+    /* Atoms to bits grid */
+    .atoms-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 12px; }
+    .atom-tile { border-radius: 10px; padding: 14px 16px; background: rgba(76,187,138,0.07); border: 1px solid rgba(76,187,138,0.2); }
+    .atom-icon { font-size: 1.4rem; margin-bottom: 6px; }
+    .atom-name { font-size: 0.82rem; font-weight: 600; color: var(--green); margin-bottom: 4px; }
+    .atom-body { font-size: 0.78rem; color: var(--muted); line-height: 1.5; }
+
+    /* Netflix challenges grid */
+    .challenge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 10px; margin-top: 12px; }
+    .chal-tile { background: rgba(224,92,106,0.07); border: 1px solid rgba(224,92,106,0.18); border-radius: 8px; padding: 12px 14px; }
+    .chal-name { font-size: 0.85rem; font-weight: 600; color: var(--red); margin-bottom: 4px; }
+    .chal-body { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+
+    /* Response tactics grid */
+    .tactic-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 10px; margin-top: 12px; }
+    .tactic-tile { background: rgba(91,141,238,0.07); border: 1px solid rgba(91,141,238,0.18); border-radius: 8px; padding: 12px 14px; }
+    .tactic-name { font-size: 0.85rem; font-weight: 600; color: var(--accent2); margin-bottom: 4px; }
+    .tactic-body { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+
+    .quiz-container { display: flex; flex-direction: column; gap: 28px; }
+    .quiz-q { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px 24px 20px; }
+    .q-number { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); margin-bottom: 10px; }
+    .q-text { font-size: 1rem; font-weight: 500; line-height: 1.55; margin-bottom: 18px; }
+    .options { display: flex; flex-direction: column; gap: 8px; }
+    .option { display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 0.88rem; line-height: 1.5; transition: border-color 0.2s, background 0.2s; user-select: none; }
+    .option:hover { border-color: var(--accent2); background: rgba(91,141,238,0.06); }
+    .option.correct { border-color: var(--green) !important; background: rgba(76,187,138,0.1) !important; }
+    .option.wrong   { border-color: var(--red)   !important; background: rgba(224,92,106,0.08) !important; }
+    .opt-letter { min-width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; flex-shrink: 0; margin-top: 1px; }
+    .option.correct .opt-letter { background: var(--green); border-color: var(--green); color: #fff; }
+    .option.wrong   .opt-letter { background: var(--red);   border-color: var(--red);   color: #fff; }
+    .feedback { margin-top: 12px; font-size: 0.83rem; color: var(--green); display: none; line-height: 1.55; padding: 10px 12px; background: rgba(76,187,138,0.06); border-radius: 8px; }
+    .feedback.wrong-fb { color: #f09a6a; background: rgba(224,92,106,0.06); }
+
+    .score-bar { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    .score-text { font-size: 0.95rem; color: var(--muted); }
+    .score-num  { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; color: var(--accent); }
+    .reset-btn  { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 8px 18px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-family: 'DM Sans', sans-serif; transition: border-color 0.2s, color 0.2s; }
+    .reset-btn:hover { border-color: var(--accent); color: var(--accent); }
+    footer { text-align: center; margin-top: 64px; color: var(--muted); font-size: 0.8rem; }
+
+    @media (max-width: 560px) {
+      .disruption-grid { grid-template-columns: 1fr; }
+      .atoms-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+  <a href="index.html" class="back">Back to all chapters</a>
+
+  <div class="ch-label">Chapter 04</div>
+  <h1>Disruptive Innovation & Netflix</h1>
+  <p class="ch-subtitle">How giants fall, why managers don't see it coming, and what Netflix teaches us about surviving the shift</p>
+  <div class="divider"></div>
+
+  <!-- VOCAB -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-vocab">📖</div>
+      <div class="section-title">Vocabulary</div>
+    </div>
+    <div class="vocab-list">
+
+      <div class="vocab-card">
+        <div class="vocab-term">Disruptive Innovation (Disruptive Technology)</div>
+        <div class="vocab-def">A theory by the late Harvard professor Clayton Christensen describing innovations with two specific characteristics: (1) they come to market with performance attributes that existing customers don't value, and (2) over time, their performance improves until they invade established markets. Early digital cameras were terrible — grainy, slow, expensive. No existing film customer asked for them. But they improved until they made film nearly extinct. This is not just "any innovation" — it's a very precise pattern that explains why dominant firms fail even when they're doing everything "right."</div>
+        <div class="analogy-box">🧠 Analogy: A new restaurant opens serving food that serious foodies call "amateurish." The existing restaurants ignore it — their best customers aren't going there. But over time, the new place improves and starts winning everyday customers. By the time the established restaurants notice, the newcomer has half the town's traffic. That's disruption: ignored until it's too late.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 4; Christensen, The Innovator's Dilemma</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">McNamara Fallacy</div>
+        <div class="vocab-def">Basing decisions solely on quantitative data linked to past events — and ignoring what can't yet be measured. Named for U.S. Defense Secretary Robert McNamara, who failed to see how warfare had changed in Vietnam because he trusted the metrics instead of the reality. In business, it looks like analysts dismissing Uber because "they measured the taxi market and it wasn't that big." They failed to see that Uber would grow the market by attracting people who'd never taken a cab. When disruption is underway, past data is the worst possible guide — entirely new markets are being created that no historical dataset can capture.</div>
+        <div class="analogy-box">🧠 Analogy: Trying to predict the future of streaming video in 2005 by measuring VHS rental revenue. The data says "small niche market." But the data is measuring the wrong thing — it can't capture all the people who would watch streaming but never rented a tape. Past metrics are a rearview mirror. Disruption requires a windshield.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 4</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Atoms to Bits</div>
+        <div class="vocab-def">The shift from physical (atom-based) distribution of media to digital (bit-based) delivery. Nearly all media starts as digital files — music, movies, books, games. When we buy a physical CD, DVD, or printed book, we're buying atoms that are just a container for bits. The shift to distributing bits directly (Spotify, Netflix, Kindle) eliminates the need for manufacturing, warehousing, and retail. It also changes the economics entirely: marginal cost approaches zero, global distribution is instant, and physical retailers and middlemen become unnecessary. Every media industry — music, video, newspapers, books, games — has been transformed by this shift.</div>
+        <div class="analogy-box">🧠 Analogy: A letter is atoms (paper, ink, envelope, stamp, truck, mail carrier). An email is bits. Same message, radically different economics. Once the "letter" businesses (newspapers, record stores, video rental chains) faced the email-equivalent of their industry, the cost structure advantage was insurmountable.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 4; Negroponte, Being Digital</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Fixed Costs vs. Marginal Costs</div>
+        <div class="vocab-def">Fixed costs don't vary with production volume — building a factory, producing a film, or writing a book costs the same whether you sell 1 copy or 1 million. Marginal costs are the additional cost of each extra unit produced. For digital goods, the marginal cost is effectively zero — making one more copy of a movie or song requires no additional materials, labor, or distribution expense. This is why digital businesses can scale dramatically without proportional cost increases. However, this zero-marginal-cost advantage applies only to content owners — Netflix must pay licensing fees for every title it streams from studios, making its marginal costs decidedly non-zero.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 4</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">First Sale Doctrine</div>
+        <div class="vocab-def">A U.S. Supreme Court ruling stating that whoever legally purchases a copy of a copyrighted work receives the right to resell, lend, or distribute that particular physical copy — regardless of what the copyright holder prefers. This is what allowed Netflix to buy DVDs at retail and mail them to subscribers without needing any license from studios. Libraries can lend books for the same reason. Critically, the First Sale Doctrine applies only to atoms — the physical disc. It does not apply to streaming bits. Netflix needed separate licensing agreements to stream every single title, giving studios enormous leverage they never had in the DVD era.</div>
+        <div class="analogy-box">🧠 Analogy: If you buy a book, you can resell it, lend it to a friend, or donate it to a library — even though the author might prefer you buy a new copy each time. That's the First Sale Doctrine. But if you wanted to broadcast the book's contents over the radio, you'd need a separate license. That's the bit-streaming problem Netflix faces: it bought the DVD, but streaming is a whole different permission.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 4</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Windowing</div>
+        <div class="vocab-def">The practice of making content available to specific distribution channels for a limited time window, each under a different revenue model. A film typically goes: theaters → hospitality (hotels/airlines) → DVD purchase → pay-per-view → pay cable → eventually free broadcast TV. Each window is carefully timed to maximize revenue at each stage without cannibalizing higher-value earlier windows. For streaming, windowing and exclusivity deals are Netflix's biggest content headache — studios delay or withhold content from streaming, and rivals with their own services (Disney+, Max, Peacock) simply refuse to license their best titles to Netflix at any price.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 4</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Long Tail</div>
+        <div class="vocab-def">A strategy of offering an extremely large selection of content or products, including niche items that individually sell rarely but collectively represent significant value. Netflix's original DVD-by-mail business was the ultimate long tail — it could stock nearly every title ever released on DVD since the First Sale Doctrine let them buy discs at retail. Physical stores could stock only the most popular 2,000–3,000 titles. Netflix offered over 100,000. In streaming, the long tail shrank to a "long-enough tail" — Netflix can't license everything and rivals are hoarding their best content, so the goal shifted to consistently offering something compelling for everyone, even without offering everything.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 4</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Transfer Pricing</div>
+        <div class="vocab-def">The price paid when two divisions of the same company transact with each other. When Comcast paid $500 million to license The Office from NBC (which Comcast owns), that's transfer pricing — money moving from one pocket to another within the same parent company. Transfer pricing must be set at fair market value (as if it were an arms-length deal with a stranger) to satisfy legal and accounting requirements. It matters because even though the money stays in-house, each division needs its own profit/loss statement, partners with partial ownership of content must be paid, and music licenses and actor residuals still apply regardless of who the "buyer" is.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 4</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Coopetition (Frenemies)</div>
+        <div class="vocab-def">A situation where two firms simultaneously cooperate and compete with each other. Netflix is the most cited example: it uses Amazon Web Services (AWS) to host and stream its content — meaning Amazon is the infrastructure provider keeping Netflix running. At the same time, Amazon Prime Video is one of Netflix's most direct streaming rivals. Neither can afford to end the relationship (Netflix needs AWS's scale; Amazon earns significant cloud revenue from Netflix), but neither wants the other to win. Coopetition is increasingly common in tech, where rivals share infrastructure, platforms, or distribution while still competing for the same end customer.</div>
+        <div class="analogy-box">🧠 Analogy: Two rival restaurants both using the same commercial kitchen space during off-hours. They compete for the same dinner customers but cooperate on overhead. Neither wants to help the other win, but both benefit from shared costs. Netflix and Amazon are like that — except at a multi-billion-dollar scale.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 4</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Decision Fatigue</div>
+        <div class="vocab-def">A phenomenon where consumers avoid making selections when faced with an overwhelming number of choices, often defaulting to known favorites or making no decision at all. Related to congestion effects (from Chapter 3) — here the finite resource being over-consumed is customer attention. Netflix producing 6,600+ original titles creates a paradox: more content may actually reduce engagement if users can't surface what they want. Behavioral psychologists link decision fatigue to the enduring popularity of familiar titles like The Office and Friends — when overwhelmed, users gravitate toward known quantities rather than exploring the vast library. This is why Netflix's recommendation engine is a core strategic asset, not just a nice feature.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 4</div>
+      </div>
+
+      <div class="vocab-card">
+        <div class="vocab-term">Creosote Bush Effect</div>
+        <div class="vocab-def">Christensen's analogy for how internal corporate dynamics kill potentially disruptive innovations before they can develop. The desert creosote bush secretes a toxin that kills competing plants nearby so they can't siphon resources. In firms, resource-coveting managers do the same — they pull high-quality engineers off "experimental" projects to staff the firm's profitable core offerings whenever the cash cow needs attention. The result: the internal disruption project is starved, engineers are reassigned, and the firm fails to build the nascent technology that could have been its next business. Yahoo!'s mobile team was disbanded because it couldn't justify its budget — then Instagram and WhatsApp were built by outsiders in the same space Yahoo! had abandoned.</div>
+        <div class="vocab-cite">Source: Gallaugher, Ch. 4; Christensen</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- KEY CONCEPTS -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-concepts">💡</div>
+      <div class="section-title">Key Concepts</div>
+    </div>
+    <div class="concept-list">
+
+      <div class="concept-card">
+        <div class="concept-title">The Two-Phase Model of Disruption — Why Giants Don't See It Coming</div>
+        <div class="concept-body">Christensen's framework explains both the shape of disruption and why smart executives consistently miss it. It's not stupidity — it's rational behavior in a system designed to reward short-term performance.
+        <div class="disruption-grid">
+          <div class="dis-tile dis-incumbent">
+            <div class="dis-label">Phase 1: Ignored</div>
+            <div class="dis-body">The disruptive technology performs badly on the metrics incumbents use. Early digital cameras: poor photo quality, slow, expensive, few could store. Existing customers don't want it. Margins are worse. The rational move is to keep investing in your profitable, customer-validated core product. Your best engineers stay on the cash cow. The startup gets the leftovers.</div>
+          </div>
+          <div class="dis-tile dis-disruptor">
+            <div class="dis-label">Phase 2: Invaded</div>
+            <div class="dis-body">Moore's Law and fast/cheap technology improve the disruptor until it crosses the "good enough" threshold for mainstream customers. Now it invades the incumbent's market — but incumbents have been ignoring it for years. The disruptor has scale, brand, and expertise. The incumbent is playing catch-up against a firm that has been laser-focused on this market the entire time.</div>
+          </div>
+        </div>
+        <br/>
+        <b>Why executives fail to respond:</b> Existing customers aren't asking for the new technology. The new market has worse margins. Assigning top engineers to an unproven niche would be considered a bad business decision by shareholders. This creates a <b>rational blindness</b> — doing everything right for today's business while systematically ignoring the thing that will kill it tomorrow.<br/><br/>
+        <b>The Ballmer quote says it all:</b> Microsoft's CEO said the iPhone had "no chance" of getting significant market share shortly after its launch. He was being rational based on every metric that mattered to Microsoft's business at the time. He was catastrophically wrong.
+        </div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-title">Intel's Disruption in Progress — Kodak's Story Repeating</div>
+        <div class="concept-body">Intel had a near-monopoly on processors for laptops, desktops, and servers. Then two market disruptions it had dismissed turned into existential threats.<br/><br/>
+        <b>ARM chips:</b> Originally designed for mobile phones — lower-margin, less-powerful chips Intel considered beneath its market. But Moore's Law improved ARM chips until they were fast enough for laptops and servers. When Apple asked Intel to make a mobile chip for the iPhone, Intel declined — it was low-margin work for an unproven device. Apple turned to ARM. The iPhone became the most profitable consumer electronics product in history. Then Apple used its ARM expertise to build the M1 chip for Macs — up to 3.5x faster than Intel chips, with 6x better graphics and 25% better power efficiency. Intel lost one of its best customers and was publicly humiliated by the performance gap.<br/><br/>
+        <b>Nvidia:</b> Started making graphics chips for PC gaming — a market Intel never took seriously. It turned out that chips designed to handle massively parallel graphics calculations were also perfect for training AI models. Nvidia now has 80%+ of the graphics chip market and an estimated 90%+ of AI-focused chips. Its market cap soared above $1 trillion. Jensen Huang (Nvidia's CEO) called these early bets "$0 billion markets" — markets so small they didn't yet exist when he entered them. Intel, meanwhile, is still fighting for relevance in AI while two once-dismissed rivals now dominate its core markets.
+        </div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-title">The Atoms-to-Bits Shift — How Entire Industries Get Rewritten</div>
+        <div class="concept-body">When the container for content becomes digital, every piece of the old value chain becomes unnecessary or actively harmful.
+        <div class="atoms-grid">
+          <div class="atom-tile">
+            <div class="atom-icon">🎵</div>
+            <div class="atom-name">Music</div>
+            <div class="atom-body">CDs → iTunes → Spotify. Record stores gone. Labels lost pricing power when Apple controlled 75%+ of digital sales and could dictate song prices. Spotify shifted control again with streaming.</div>
+          </div>
+          <div class="atom-tile">
+            <div class="atom-icon">🎬</div>
+            <div class="atom-name">Video</div>
+            <div class="atom-body">VHS → DVD → Streaming. Blockbuster's 9,000 stores vs Netflix's 58 automated warehouses. Streaming eliminated warehouses too. Netflix used streaming to outflank every physical rival.</div>
+          </div>
+          <div class="atom-tile">
+            <div class="atom-icon">📚</div>
+            <div class="atom-name">Books</div>
+            <div class="atom-body">Physical books → Kindle. Amazon was selling more e-books than print within 4 years of Kindle launch. Publishers lost pricing power when Amazon dominated digital distribution.</div>
+          </div>
+          <div class="atom-tile">
+            <div class="atom-icon">📰</div>
+            <div class="atom-name">News</div>
+            <div class="atom-body">Print → Web. San Jose Mercury News: classified ads dropped from $118M to $18M in five years. "Craigslist has disemboweled us." Digital ad revenue never replaced what classified ads once generated.</div>
+          </div>
+          <div class="atom-tile">
+            <div class="atom-icon">🎮</div>
+            <div class="atom-name">Games</div>
+            <div class="atom-body">Physical game discs → Digital downloads. GameStop closed 780+ stores in two years. That's why the GameStop short-squeeze happened: traders bet against a physical game retailer in a digital world.</div>
+          </div>
+          <div class="atom-tile">
+            <div class="atom-icon">📡</div>
+            <div class="atom-name">TV</div>
+            <div class="atom-body">Cable bundles → Streaming. "Cord-cutting" has caused billions in lost revenue for cable. Streaming removed the geographic and schedule constraints that gave broadcast TV its power.</div>
+          </div>
+        </div>
+        </div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-title">Netflix: How One Firm Navigated Disruption (And Almost Didn't)</div>
+        <div class="concept-body">Netflix is one of the only examples in business history of a firm that dominated one technology era, recognized the disruption coming for its own business, and rebuilt itself from scratch to lead the next era.<br/><br/>
+        <b>DVD-by-mail advantages (the old business):</b> Netflix built 58 highly automated distribution warehouses delivering to 97% of the U.S. in under 24 hours. It leveraged the First Sale Doctrine to stock over 100,000 titles — a long tail that no physical store could replicate. Its recommendation engine created powerful switching costs; your watch history, ratings, and queue were lost if you went to Blockbuster. The result: lowest customer churn in the industry, and a set of scale + switching cost + brand assets rivals couldn't profitably match. As Hastings said: "We didn't call the firm DVD-by-mail Flix."<br/><br/>
+        <b>The Qwikster disaster (what not to do):</b> Netflix split its $10 DVD+streaming plan into two $8 plans — effectively a 60% price hike. 44,000 negative Facebook comments. "#DearNetflix" trending. Then it announced two separate websites (Qwikster for DVDs, Netflix for streaming). The @Qwikster Twitter handle was owned by a guy whose profile picture was a blunt-smoking Elmo. Netflix lost 800,000 subscribers in 90 days. Stock fell from $304 to below $75. Lesson: when degrading service or raising rates, communicate clearly and don't shock customers. Secure your branding assets before announcing.<br/><br/>
+        <b>The streaming reinvention:</b> In the shift to streaming, almost everything changed: content acquisition became licensing-based instead of First-Sale-based; competitors multiplied; supplier power flipped to content owners; the long tail shrank to a "long-enough tail"; and original content became the only reliable moat. Netflix now spends ~$17 billion annually on content and has released 6,600+ originals — more original content in 2019 than the entire TV industry produced in 2005.
+        </div>
+      </div>
+
+      <div class="concept-card">
+        <div class="concept-title">How to Spot & Survive Disruption — Lessons for Managers</div>
+        <div class="concept-body">Recognizing disruption early is step one. Responding effectively is step two. Most firms fail at both.
+        <div class="tactic-grid">
+          <div class="tactic-tile">
+            <div class="tactic-name">🔭 Improve Your Radar</div>
+            <div class="tactic-body">Talk to VCs, researchers, and engineers on the experimental edge. Rotate staff across teams every 18 months (Facebook's model) to spread idea flow. Watch the trajectory of fast/cheap tech curves, not just current performance.</div>
+          </div>
+          <div class="tactic-tile">
+            <div class="tactic-name">📂 Build a Portfolio of Options</div>
+            <div class="tactic-body">Invest in startups or internal efforts that focus on potential disruptors. An option gives you the right (not obligation) to increase investment if the technology proves out. Microsoft and Google both invested in OpenAI early — Microsoft's 49% stake gave it exclusive access to ChatGPT for Windows, Office, and Azure.</div>
+          </div>
+          <div class="tactic-tile">
+            <div class="tactic-name">🏝️ Isolate Disruptive Projects</div>
+            <div class="tactic-body">Protect experimental teams from the creosote bush. Geographic distance helps. High autonomy is critical. If the new effort is managed by the same team running the cash cow, it will always lose in resource battles. Keep it separate until it can stand on its own.</div>
+          </div>
+          <div class="tactic-tile">
+            <div class="tactic-name">🧪 Watch Your Own Employees</div>
+            <div class="tactic-body">Many disruptive companies were founded by employees of the disrupted giant: Adobe (from Xerox), Apple founders (from HP), Salesforce (from Oracle), Nvidia's Jensen Huang (from AMD/LSI Logic), Zoom's Eric Yuan (from Cisco/WebEx), Anthropic (from OpenAI). If a passionate employee leaves to build the exact thing you rejected, pay attention.</div>
+          </div>
+          <div class="tactic-tile">
+            <div class="tactic-name">🔄 Intuit's Playbook</div>
+            <div class="tactic-body">Intuit bought Mint.com (a free rival to its paid Quicken) even though it cannibalized its own product. It let engineers spend 10% of time on experimental ideas. It migrated TurboTax to the cloud, added free SnapTax, and pivoted to AI-driven financial advice. Result: revenue grew 14% in 2020 while rivals struggled.</div>
+          </div>
+          <div class="tactic-tile">
+            <div class="tactic-name">⚠️ Avoid McNamara Traps</div>
+            <div class="tactic-body">Analysts predicted Uber would be limited to the taxi market size. AT&T's consultants at McKinsey predicted 900,000 U.S. cell phone subscribers (actual: 109 million). When dealing with disruption, past data measures the wrong thing. Entire new markets appear that never existed before.</div>
+          </div>
+        </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-icon icon-quiz">🎯</div>
+      <div class="section-title">Practice Quiz</div>
+    </div>
+
+    <div class="score-bar" style="margin-bottom:24px;">
+      <div>
+        <div class="score-text">Your score</div>
+        <div class="score-num" id="score">0 / 5</div>
+      </div>
+      <button class="reset-btn" onclick="resetQuiz()">Reset Quiz</button>
+    </div>
+
+    <div class="quiz-container">
+
+      <!-- Q1: correct = C -->
+      <div class="quiz-q" id="q1">
+        <div class="q-number">Question 1</div>
+        <div class="q-text">Kodak once held nearly 90% market share in film photography, had 145,000 employees, and was so profitable that an executive joked any product more lucrative than film was probably illegal. Today Kodak is bankrupt. Microsoft's Steve Ballmer called the iPhone a product with "no chance" of gaining significant market share. Intel passed on building a mobile chip for Apple because mobile was a lower-margin niche. What single principle from Chapter 4 ties all three of these failures together?</div>
+        <div class="options">
+          <div class="option" onclick="answer(this,'q1',false)"><div class="opt-letter">A</div> The McNamara Fallacy — all three firms relied on past market data to predict future outcomes, ignoring the possibility that entirely new markets were being created by emerging technology.</div>
+          <div class="option" onclick="answer(this,'q1',false)"><div class="opt-letter">B</div> The atoms-to-bits shift — all three firms were disrupted when their physical products were replaced by cheaper digital equivalents that eliminated the need for manufacturing and distribution infrastructure.</div>
+          <div class="option" onclick="answer(this,'q1',true)"><div class="opt-letter">C</div> Disruptive innovation — each firm rationally ignored a new technology because existing customers didn't demand it and it delivered worse margins, allowing the disruptor time to improve until it invaded and overtook the established market.</div>
+          <div class="option" onclick="answer(this,'q1',false)"><div class="opt-letter">D</div> The creosote bush effect — each firm's internal management structure starved experimental projects of resources by consistently prioritizing the most profitable existing product lines over emerging innovations.</div>
+        </div>
+        <div class="feedback" id="q1-fb">✓ Correct! This is Christensen's disruptive innovation theory in its purest form. Kodak's film customers didn't ask for digital cameras — they were terrible at first. Ballmer's rational analysis of iPhone's market potential was correct by 2006 metrics — smartphones were a low-margin niche. Intel's decision to skip Apple's mobile chip made perfect financial sense given the iPhone was unproven. In each case, the firm was doing exactly what good management demanded: listening to existing customers and protecting margins. Christensen's insight is that this rational behavior is precisely what creates the blindspot. By the time the disruptive technology improves enough to matter, the disruptor has years of head start that the incumbent can almost never close.</div>
+        <div class="feedback wrong-fb" id="q1-wfb">✗ Not quite. While elements of McNamara, atoms-to-bits, and creosote bush are present, the textbook's primary explanation for all three failures is disruptive innovation theory. Each firm made rational decisions based on what existing customers wanted and what generated the best margins — and that rational focus created a systematic blind spot. Disruptive technologies come to market poorly, get ignored, then improve until they invade. The pattern is the same whether you're Kodak, Ballmer, or Intel's leadership.</div>
+      </div>
+
+      <!-- Q2: correct = B -->
+      <div class="quiz-q" id="q2">
+        <div class="q-number">Question 2</div>
+        <div class="q-text">Netflix's original DVD-by-mail business had a competitive moat that Blockbuster, Walmart, and Redbox all failed to breach — even with significant resources. Which combination of strategic assets made Netflix's position so difficult to attack?</div>
+        <div class="options">
+          <div class="option" onclick="answer(this,'q2',false)"><div class="opt-letter">A</div> Brand and network effects — Netflix had built such strong consumer recognition that any new entrant faced the same challenge as launching a social network against Facebook: too few users made the rival service worthless, and Netflix's subscriber base grew larger every year.</div>
+          <div class="option" onclick="answer(this,'q2',true)"><div class="opt-letter">B</div> Scale (58 automated warehouses enabling next-day delivery to 97% of the country), switching costs (recommendation engine data lost upon cancellation), and long tail (First Sale Doctrine allowed 100,000+ titles that no physical rival could match).</div>
+          <div class="option" onclick="answer(this,'q2',false)"><div class="opt-letter">C</div> First mover advantage and exclusive content deals — Netflix had locked up licensing agreements with major studios before Blockbuster entered the DVD-by-mail space, preventing rivals from accessing the most popular titles.</div>
+          <div class="option" onclick="answer(this,'q2',false)"><div class="opt-letter">D</div> Vertical integration and transfer pricing — Netflix owned its distribution infrastructure and produced its own content, eliminating supplier power and allowing it to deliver titles at a lower cost than rivals who had to negotiate with studios for every DVD.</div>
+        </div>
+        <div class="feedback" id="q2-fb">✓ Correct! The textbook walks through exactly these three assets. Scale: Netflix's 58 distribution warehouses made next-day delivery possible for 97% of the U.S. — rivals would need to build that same infrastructure at the same fixed cost but with far fewer customers to spread those costs across, making them structurally less profitable. Switching costs: Netflix's recommendation engine was built on years of your ratings, watch history, and queue — which you'd lose entirely if you cancelled. Long tail: The First Sale Doctrine let Netflix buy any commercially available DVD and lend it out, giving it 100,000+ titles that no physical store could warehouse. Together, these three assets were VRIN — they were valuable, rare, hard to imitate, and non-substitutable. Even well-funded rivals couldn't replicate all three simultaneously.</div>
+        <div class="feedback wrong-fb" id="q2-wfb">✗ Not quite. The textbook specifically identifies three layered assets that made Netflix unbeatable in DVD-by-mail: (1) Scale — 58 automated warehouses with next-day national delivery, a fixed-cost infrastructure rivals couldn't afford to match with fewer customers; (2) Switching costs — the recommendation engine personalized around each user's specific history, which was lost upon cancellation; and (3) Long tail content — the First Sale Doctrine let Netflix legally stock 100,000+ titles without studio permission, something physical stores could never warehouse. These three reinforced each other and met every VRIN criteria.</div>
+      </div>
+
+      <!-- Q3: correct = D -->
+      <div class="quiz-q" id="q3">
+        <div class="q-number">Question 3</div>
+        <div class="q-text">In the DVD-by-mail business, Netflix could offer virtually every title ever released on DVD without negotiating with a single studio. In its streaming business, Netflix pays approximately $17 billion annually for content and has still lost beloved titles like The Office, Friends, and Disney films to rivals. What specific legal and economic factors explain why the streaming business is fundamentally harder for Netflix than DVD-by-mail was?</div>
+        <div class="options">
+          <div class="option" onclick="answer(this,'q3',false)"><div class="opt-letter">A</div> Marginal cost differences — streaming has significantly higher marginal costs than DVD distribution because Netflix must pay for bandwidth and cloud computing (via Amazon Web Services) for every stream, while physical DVDs had a fixed one-time cost per disc.</div>
+          <div class="option" onclick="answer(this,'q3',false)"><div class="opt-letter">B</div> Decision fatigue — the overwhelming volume of streaming content has made consumers harder to retain than DVD subscribers, who were content with limited weekly selections and didn't have the paradox of choice problem that streaming creates.</div>
+          <div class="option" onclick="answer(this,'q3',false)"><div class="opt-letter">C</div> Transfer pricing — studio subsidiaries that run their own streaming services must pay their parent companies for content at inflated internal prices, which Netflix cannot match since it pays market rates and lacks the internal content libraries studios use for self-dealing.</div>
+          <div class="option" onclick="answer(this,'q3',true)"><div class="opt-letter">D</div> The First Sale Doctrine applies only to atoms (physical discs), not bits — so streaming requires separate, expensive licenses for every title; studios can withhold content or build their own services; and more bidders (Amazon, Apple, Disney, etc.) drive licensing prices ever higher.</div>
+        </div>
+        <div class="feedback" id="q3-fb">✓ Correct! The textbook makes this the central legal and economic pivot of the chapter. In DVD-by-mail, the First Sale Doctrine was Netflix's superpower — buy the disc once, lend it unlimited times, no studio permission needed, no recurring costs. In streaming, every title requires a separate license, renewable on the studio's terms, at prices that have risen 43x in five years. Studios with their own streaming services (Disney, Warner, NBCUniversal/Comcast) simply refuse to license their best content to a rival. And unlike the DVD era where Netflix was essentially the only bidder, streaming rights now face competition from Amazon, Apple, Peacock, Hulu, and more — pushing prices up with every renewal. The First Sale Doctrine was the reason Netflix could build the long tail. Its absence in streaming is why that long tail collapsed.</div>
+        <div class="feedback wrong-fb" id="q3-wfb">✗ Not quite. While marginal costs, decision fatigue, and transfer pricing are all real concepts in the chapter, the textbook's core explanation for why streaming is harder than DVD-by-mail comes down to one legal ruling: the First Sale Doctrine. It applied to atoms (discs) but not bits (streams). In DVD days, Netflix could stock any title without a license. In streaming, every title needs a paid, time-limited license from a supplier with enormous leverage — especially suppliers who've launched competing services and have zero incentive to help Netflix. That legal and structural difference is what turned Netflix's content moat into a licensing cost spiral.</div>
+      </div>
+
+      <!-- Q4: correct = A -->
+      <div class="quiz-q" id="q4">
+        <div class="q-number">Question 4</div>
+        <div class="q-text">Yahoo! had an internal mobile team years before Instagram and WhatsApp existed. A former CEO disbanded the team because it couldn't justify its budget with measurable results. The team leader left, engineers scattered, and the internal effort died. Intuit, facing similar disruption from free cloud-based competitors, took the opposite approach — buying Mint.com (a free competitor to its paid Quicken product) and letting engineers spend 10% of their time on experimental projects. The chapter uses these two firms as contrasting examples of what?</div>
+        <div class="options">
+          <div class="option" onclick="answer(this,'q4',true)"><div class="opt-letter">A</div> How to recognize and respond to disruptive innovation — Yahoo! fell victim to the creosote bush effect (profitable products starved the experimental team), while Intuit deliberately protected and funded its nascent disruptive efforts even when they cannibalized its own revenue.</div>
+          <div class="option" onclick="answer(this,'q4',false)"><div class="opt-letter">B</div> The McNamara Fallacy in practice — Yahoo! used quantitative metrics to dismiss mobile's potential, while Intuit used qualitative customer feedback to identify that cloud software would replace packaged products before the shift was visible in financial data.</div>
+          <div class="option" onclick="answer(this,'q4',false)"><div class="opt-letter">C</div> The atoms-to-bits shift in software — Yahoo! failed to transition its desktop-based products to digital delivery, while Intuit successfully migrated its physical packaged software business (sold on CD-ROMs in box stores) to a cloud-based subscription model.</div>
+          <div class="option" onclick="answer(this,'q4',false)"><div class="opt-letter">D</div> Transfer pricing problems — Yahoo!'s mobile team was underfunded because the parent company charged it too much for internal resources, while Intuit's cloud teams benefited from favorable internal pricing that let them undercut external competitors during their development phase.</div>
+        </div>
+        <div class="feedback" id="q4-fb">✓ Correct! The textbook explicitly presents Yahoo! and Intuit as the chapter's two case studies on responding to disruptive innovation — one failure, one success. Yahoo!'s mobile team was the creosote bush story: a promising disruptive effort killed not by external competition but by internal resource politics. When a team can't show financial returns, managers justify pulling its engineers for the profitable core business. The innovation dies from internal starvation. Intuit did the opposite: it bought Mint even though it cannibalized Quicken, it protected engineers' experimental time, and it migrated to cloud/AI despite the short-term revenue hit. The contrast is intentional — same disruption pressure, opposite outcomes, driven by how each firm chose to manage its relationship with the disruptive innovation.</div>
+        <div class="feedback wrong-fb" id="q4-wfb">✗ Not quite. The chapter specifically frames Yahoo! vs. Intuit as the central case study pairing for "how to respond to disruptive innovation." Yahoo! is the cautionary tale of the creosote bush effect — profitable products literally killed the internal disruptive effort by draining it of resources and management support. Intuit is the survival story — it bought a competitor that was eating its lunch, protected experimental time for engineers, and cannibalized its own revenue rather than let an outsider do it first. McNamara Fallacy and atoms-to-bits are related concepts but not the primary frame the textbook applies to this particular comparison.</div>
+      </div>
+
+      <!-- Q5: correct = C -->
+      <div class="quiz-q" id="q5">
+        <div class="q-number">Question 5</div>
+        <div class="q-text">When Netflix announced Qwikster — splitting into two separate services with separate websites and effectively raising prices 60% — it lost 800,000 customers in 90 days and its stock fell from $304 to below $75. When Netflix raised prices by $1 in 2014, there was no notable customer outrage at all. What was fundamentally different about how Netflix handled these two price changes?</div>
+        <div class="options">
+          <div class="option" onclick="answer(this,'q5',false)"><div class="opt-letter">A</div> The 2014 increase was smaller in dollar amount, and customers have a known psychological threshold where price increases below a certain absolute dollar value trigger minimal negative response regardless of percentage change.</div>
+          <div class="option" onclick="answer(this,'q5',false)"><div class="opt-letter">B</div> By 2014, Netflix had stronger network effects and a larger subscriber base, making customers more reluctant to cancel because leaving would mean losing access to a service that all their friends and family were using to discuss and recommend shows.</div>
+          <div class="option" onclick="answer(this,'q5',true)"><div class="opt-letter">C</div> The Qwikster change was sudden, unexplained, and made the product harder to use — forcing customers onto two separate websites. The 2014 increase was communicated clearly, announced in advance, grandfathered existing customers for two years, and didn't degrade the service at all.</div>
+          <div class="option" onclick="answer(this,'q5',false)"><div class="opt-letter">D</div> The Qwikster announcement coincided with competition from Blockbuster and Walmart entering DVD-by-mail, creating a confluence of negative news that amplified the customer backlash beyond what the price change itself would have caused.</div>
+        </div>
+        <div class="feedback" id="q5-fb">✓ Correct! The textbook draws this contrast explicitly as a lesson in change management. The Qwikster disaster combined multiple shocks simultaneously: an unexplained 60% effective price hike, a product degradation (two separate websites instead of one), a confusing rebranding with an embarrassing social media situation, and zero advance notice. Customers felt ambushed and disrespected. The 2014 increase applied only a $1 raise to new customers, grandfathered existing customers for two years, was announced well in advance, and didn't change the product at all. Same company, same type of change — completely different outcomes, entirely driven by communication, timing, and whether the product change made customers' lives better or worse. Lesson: "When degrading service or raising rates, communicate clearly and don't shock customers."</div>
+        <div class="feedback wrong-fb" id="q5-wfb">✗ Not quite. The textbook's lesson here isn't about dollar amounts, network effects, or competitive timing — it's about how change is communicated and whether it degrades the user experience. The Qwikster announcement combined a surprise price hike with a product degradation (two websites), a confusing rebrand, and zero customer dialogue. The 2014 increase was announced in advance, applied only to new customers, grandfathered existing users for two years, and left the product unchanged. Reed Hastings explicitly called out the lesson: "We moved too quickly for our customers." The dollar amount wasn't the problem. The shock was.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer><p>Chapter 4 · Disruptive Innovation & Netflix · Study Guide</p></footer>
+</div>
+
+<script>
+  let answered = {q1:false,q2:false,q3:false,q4:false,q5:false};
+  let correctCount = 0;
+
+  function answer(el, qid, isCorrect) {
+    if (answered[qid]) return;
+    answered[qid] = true;
+    const opts = el.closest('.options').querySelectorAll('.option');
+    opts.forEach(o => o.style.pointerEvents = 'none');
+    if (isCorrect) {
+      el.classList.add('correct');
+      correctCount++;
+      document.getElementById(qid+'-fb').style.display = 'block';
+    } else {
+      el.classList.add('wrong');
+      document.getElementById(qid+'-wfb').style.display = 'block';
+      opts.forEach(o => {
+        if (o.getAttribute('onclick') && o.getAttribute('onclick').includes('true')) o.classList.add('correct');
+      });
+    }
+    document.getElementById('score').textContent = correctCount + ' / 5';
+  }
+
+  function resetQuiz() {
+    answered = {q1:false,q2:false,q3:false,q4:false,q5:false};
+    correctCount = 0;
+    document.getElementById('score').textContent = '0 / 5';
+    document.querySelectorAll('.option').forEach(o => {
+      o.classList.remove('correct','wrong');
+      o.style.pointerEvents = '';
+    });
+    document.querySelectorAll('.feedback').forEach(f => f.style.display = 'none');
+  }
+</script>
+</body>
+</html>
